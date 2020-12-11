@@ -18,7 +18,7 @@ shinyServer(function(input, output, session) {
       #smooth_ford = filter(price, filter = c(1/24, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/24), sides = 2)
       ts_ford = ts(price, frequency = 12, start = c(1988,7), end = c(2018,6))
       #smooth_ford = ts(smooth_ford, frequency = 12, start = c(1988,7), end = c(2018,6))
-      output$timeseriesplot <- renderPlot(plot.ts(ts_ford, ylab = "price"))
+      output$timeseriesplot <- renderPlot(plot.ts(ts_ford, ylab = "price",xlab="year",main="time series plot"))
       
       if (input$decompose == "TRUE"){
         
@@ -32,13 +32,7 @@ shinyServer(function(input, output, session) {
         output$decomposeplot = NULL
       }
       
-      if (input$info == "TRUE"){
-        output$information <- renderText("This dataset is monthly stock price (close price) of Ford from July 1988 to June 2017.
-                                         Data retrieved from finance.yahoo.com")
-      }
-      else if (input$info == "FALSE"){
-        output$information = NULL
-      }
+
       }
     
     else if (input$dataset == "Berkshire Hathaway Stock Price"){
@@ -47,7 +41,7 @@ shinyServer(function(input, output, session) {
       price = bh[[5]]
       #output$timeseriesplot <- renderPlot(plot.ts(price))
       ts_bh = ts(price, frequency = 12, start = c(1988,7), end = c(2018,6))
-      output$timeseriesplot <- renderPlot(plot.ts(ts_bh, ylab = "price"))
+      output$timeseriesplot <- renderPlot(plot.ts(ts_bh, ylab = "price",xlab="year",main="time series plot"))
       
       if (input$decompose == "TRUE"){
         bh2 = decompose(ts_bh, filter = c(1/24, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/24))
@@ -55,16 +49,10 @@ shinyServer(function(input, output, session) {
       }
       
       else if (input$decompose == "FALSE"){
-        output$decompose = NULL
+        output$decomposeplot = NULL
       }
       
-      if (input$info == "TRUE"){
-        output$information <- renderText("This dataset is monthly stock price (close price) of Berkshire Hathaway from July, 1988 to June 2017.
-                                         Data retrieved from finance.yahoo.com")
-      }
-      else if (input$info == "FALSE"){
-        output$information = NULL
-      }
+
       }
     
     else if (input$dataset == "S&P 500"){
@@ -72,7 +60,7 @@ shinyServer(function(input, output, session) {
       time = bh[[1]]
       price = bh[[5]]
       ts_sp = ts(price, frequency = 12, start = c(1988,1), end = c(2018,6))
-      output$timeseriesplot <- renderPlot(plot.ts(ts_sp, ylab = " "))
+      output$timeseriesplot <- renderPlot(plot.ts(ts_sp, ylab = "index",xlab="year",main="time series plot"))
       
       if (input$decompose == "TRUE"){
         sp2 = decompose(ts_sp, filter = c(1/24, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/24))
@@ -80,16 +68,11 @@ shinyServer(function(input, output, session) {
       }
       
       else if (input$decompose == "FALSE"){
-        output$decompose = NULL
+        output$decomposeplot = NULL
       }
-      
-      if (input$info == "TRUE"){
-        output$information <- renderText("This dataset is S&P 500 index from January, 1988 to June 2017.
-                                         Data retrieved from finance.yahoo.com")
-      }
-      else if (input$info == "FALSE"){
-        output$information = NULL
-      }
+
+     
+
       }
     
     else if (input$dataset == "State College Weather"){
@@ -97,7 +80,7 @@ shinyServer(function(input, output, session) {
       time = sc[[1]]
       temp = sc[[2]]
       ts_sc = ts(temp, frequency = 12, start = c(1988,1), end = c(2017,12))
-      output$timeseriesplot <- renderPlot(plot.ts(ts_sc, ylab = "temperature"))
+      output$timeseriesplot <- renderPlot(plot.ts(ts_sc, ylab = "temperature",xlab="year",main="time series plot"))
       
       if (input$decompose == "TRUE"){
         
@@ -108,13 +91,8 @@ shinyServer(function(input, output, session) {
       else if (input$decompose == "FALSE"){
         output$decomposeplot = NULL
       }
-      if (input$info == "TRUE"){
-        output$information <- renderText("This dataset is monthly mean temperature of State College from January, 1988 to December 2017.
-                                         Data retrieved from w2.weather.gov")
-      }
-      else if (input$info == "FALSE"){
-        output$information = NULL
-      }
+
+
       }
     
     else if (input$dataset == "GDP growth rate of U.S."){
@@ -122,7 +100,7 @@ shinyServer(function(input, output, session) {
       time = sc[[1]]
       gdp = sc[[2]]
       ts_gdp = ts(gdp, frequency = 4, start = c(1988,1), end = c(2018,1))
-      output$timeseriesplot <- renderPlot(plot.ts(ts_gdp, ylab = "percent change"))
+      output$timeseriesplot <- renderPlot(plot.ts(ts_gdp, ylab = "percent change",xlab="year",main="time series plot"))
       
       if (input$decompose == "TRUE"){
         
@@ -133,14 +111,97 @@ shinyServer(function(input, output, session) {
       else if (input$decompose == "FALSE"){
         output$decomposeplot = NULL
       }
-      if (input$info == "TRUE"){
-        output$information <- renderText("This dataset is quarterly GDP growth rate of U.S. from January, 1988 to January 2018.
+{
+renderText("This dataset is quarterly GDP growth rate of U.S. from January, 1988 to January 2018.
                                          Data retrieved from fred.stlouisfed.org")
       }
-      else if (input$info == "FALSE"){
-        output$information = NULL
+
+    }
+    
+    else if (input$dataset == "U.S. covid-19 cases"){
+      us <- read.csv(file = "us.csv")
+      time = us[[1]]
+      cases = us[[2]]
+      ts_us = ts(cases, frequency = 30, start = c(1,21), end = c(6,13))
+      output$timeseriesplot <- renderPlot(plot.ts(ts_us, xlab="month in 2020",ylab = "cases",main="time series plot"))
+      
+      if (input$decompose == "TRUE"){
+        
+        us2 = decompose(ts_us, filter = NULL)
+        output$decomposeplot <-renderPlot(plot(us2))
       }
+      
+      else if (input$decompose == "FALSE"){
+        output$decomposeplot = NULL
       }
+
+      
+    }
+    
+    else if (input$dataset == "Working hours"){
+      aw <- read.csv(file = "aw.csv")
+      time = aw[[1]]
+      hours = aw[[2]]
+      ts_aw = ts(hours,frequency=2,start = c(1939,1), end = c(2020,5))
+      output$timeseriesplot <- renderPlot(plot.ts(ts_aw, xlab="year",ylab = "hours",main="time series plot"))
+      
+      if (input$decompose == "TRUE"){
+        
+        aw2 = decompose(ts_aw, filter = NULL)
+        output$decomposeplot <-renderPlot(plot(aw2))
+      }
+      
+      else if (input$decompose == "FALSE"){
+        output$decomposeplot = NULL
+      }
+      
+      
+    }
+    
+    else if (input$dataset == "US employment rate"){
+      er <- read.csv(file = "er.csv")
+      time = er[[1]]
+      rates = er[[2]]
+      ts_er = ts(rates,frequency=12,start = c(1977,1), end = c(2020,5))
+      output$timeseriesplot <- renderPlot(plot.ts(ts_er, xlab="year",ylab = "rates",main="time series plot"))
+      
+      if (input$decompose == "TRUE"){
+        
+        er2 = decompose(ts_er, filter = c(1/24, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/24))
+        output$decomposeplot <-renderPlot(plot(er2))
+      }
+      
+      else if (input$decompose == "FALSE"){
+        output$decomposeplot = NULL
+      }
+      
+      
+    }
+    
+    else if (input$dataset == "Exports of goods&services"){
+      eg <- read.csv(file = "eg.csv")
+      time = eg[[1]]
+      dollars = eg[[2]]
+      ts_eg = ts(dollars,frequency=12,start = c(1992,1), end = c(2020,4))
+      output$timeseriesplot <- renderPlot(plot.ts(ts_eg, xlab="year",ylab = "dollars in million",main="time series plot"))
+      
+      if (input$decompose == "TRUE"){
+        
+        eg2 = decompose(ts_eg, filter = c(1/24, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/24))
+        output$decomposeplot <-renderPlot(plot(eg2))
+      }
+      
+      else if (input$decompose == "FALSE"){
+        output$decomposeplot = NULL
+      }
+      
+      
+    }
+    
+    
+    
+    
+    
     
     
     
@@ -151,8 +212,7 @@ shinyServer(function(input, output, session) {
     updateTabItems(session, "tabs", "modify")
   })
   
-  
-  
+
   
   observeEvent(
     input$simulation,{
@@ -314,46 +374,64 @@ shinyServer(function(input, output, session) {
   
   
   #generate challenges
-  c <- reactiveValues(right=c(sample(1:11,1)))
+  c <- reactiveValues(right=c(sample(1:17,1)))
   
   observeEvent(input$newchallenge,{
-    c$right=sample(1:11,1)
+    c$right=sample(1:17,1)
     updateSelectInput(session, inputId = "answer", selected = "")
   })
   
   output$question1<- renderText({
     if (c$right == 1){
-      "Challenge: please choose the plot of long term trend of the following time series plot"
+      "please choose the plot of long term trend of the following time series plot"
     }
     else if (c$right == 2){
-      "Challenge: please choose the plot of seasonality of the following time series plot"
+      "please choose the plot of seasonality of the following time series plot"
     }
     else if (c$right == 3){
-      "Challenge: please choose the corresponding time series plot based on the following decomposed plots"
+      "please choose the corresponding time series plot based on the following decomposed plots"
     }
     else if (c$right == 4){
-      "Challenge: please choose the plot of long term trend of the following time series plot"
+      "please choose the plot of long term trend of the following time series plot"
     }
     else if (c$right == 5){
-      "Challenge: please choose the plot of seasonality of the following time series plot"
+      "please choose the plot of seasonality of the following time series plot"
     }
     else if (c$right == 6){
-      "Challenge: please choose the corresponding time series plot based on the following decomposed plots"
+      "please choose the corresponding time series plot based on the following decomposed plots"
     }
     else if (c$right == 7){
-      "Challenge: please choose the plot of long term trend of the following time series plot"
+      "please choose the plot of long term trend of the following time series plot"
     }
     else if (c$right == 8){
-      "Challenge: please choose the plot of long term trend of the following time series plot"
+      "please choose the plot of long term trend of the following time series plot"
     }
     else if (c$right == 9){
-      "Challenge: please choose the corresponding time series plot based on the following decomposed plots"
+      "please choose the corresponding time series plot based on the following decomposed plots"
     }
     else if (c$right == 10){
-      "Challenge: please choose the corresponding time series plot based on the following decomposed plots"
+      "please choose the corresponding time series plot based on the following decomposed plots"
     }
     else if (c$right == 11){
-      "Challenge: please choose the plot of seasonality of the following time series plot"
+      "please choose the plot of seasonality of the following time series plot"
+    }
+    else if (c$right == 12){
+      "Please choose the right answer."
+    }
+    else if (c$right == 13){
+      "Please choose the right answer."
+    }
+    else if (c$right == 14){
+      "Please choose the right answer."
+    }
+    else if (c$right == 15){
+      "Please choose the right answer."
+    }
+    else if (c$right == 16){
+      "Please choose the right answer."
+    }
+    else if (c$right == 17){
+      "Please choose the right answer."
     }
   })
   
@@ -402,6 +480,30 @@ shinyServer(function(input, output, session) {
       return(list(
         src = "q11.jpg"))
     }
+    else if (c$right == 12){
+      return(list(
+        src = "q12.jpg"))
+    }
+    else if (c$right == 13){
+      return(list(
+        src = "q13.jpg"))
+    }
+    else if (c$right == 14){
+      return(list(
+        src = "q14.jpg"))
+    }
+    else if (c$right == 15){
+      return(list(
+        src = "q15.jpg"))
+    }
+    else if (c$right == 16){
+      return(list(
+        src = "q16.jpg"))
+    }
+    else if (c$right == 17){
+      return(list(
+        src = "q17.jpg"))
+    }
   }, deleteFile = FALSE)
   
   output$choice1 <- renderImage({
@@ -448,6 +550,30 @@ shinyServer(function(input, output, session) {
     else if (c$right == 11){
       return(list(
         src = "answer11a.jpg"))
+    }
+    else if (c$right == 12){
+      return(list(
+        src = "answer12a.jpg"))
+    }
+    else if (c$right == 13){
+      return(list(
+        src = "answer13a.jpg"))
+    }
+    else if (c$right == 14){
+      return(list(
+        src = "answer14a.jpg"))
+    }
+    else if (c$right == 15){
+      return(list(
+        src = "answer15a.jpg"))
+    }
+    else if (c$right == 16){
+      return(list(
+        src = "answer16a.jpg"))
+    }
+    else if (c$right == 17){
+      return(list(
+        src = "answer17a.jpg"))
     }
   }, deleteFile = FALSE)
   
@@ -497,6 +623,30 @@ shinyServer(function(input, output, session) {
       return(list(
         src = "answer11b.jpg"))
     }
+    else if (c$right == 12){
+      return(list(
+        src = "answer12b.jpg"))
+    }
+    else if (c$right == 13){
+      return(list(
+        src = "answer13b.jpg"))
+    }
+    else if (c$right == 14){
+      return(list(
+        src = "answer14b.jpg"))
+    }
+    else if (c$right == 15){
+      return(list(
+        src = "answer15b.jpg"))
+    }
+    else if (c$right == 16){
+      return(list(
+        src = "answer16b.jpg"))
+    }
+    else if (c$right == 17){
+      return(list(
+        src = "answer17b.jpg"))
+    }
   }, deleteFile = FALSE)
   
   output$choice3 <- renderImage({
@@ -543,6 +693,30 @@ shinyServer(function(input, output, session) {
     else if (c$right == 11){
       return(list(
         src = "answer11c.jpg"))
+    }
+    else if (c$right == 12){
+      return(list(
+        src = "answer12c.jpg"))
+    }
+    else if (c$right == 13){
+      return(list(
+        src = "answer13c.jpg"))
+    }
+    else if (c$right == 14){
+      return(list(
+        src = "answer14c.jpg"))
+    }
+    else if (c$right == 15){
+      return(list(
+        src = "answer15c.jpg"))
+    }
+    else if (c$right == 16){
+      return(list(
+        src = "answer16c.jpg"))
+    }
+    else if (c$right == 17){
+      return(list(
+        src = "answer17c.jpg"))
     }
   }, deleteFile = FALSE)
   
@@ -644,6 +818,60 @@ shinyServer(function(input, output, session) {
       "Sorry, please try again."
     }
     else if ((c$right == 11) & (input$answer == "C")){
+      "Sorry, please try again."
+    }
+    else if ((c$right == 12) & (input$answer == "B")){
+      "Correct!"
+    }
+    else if ((c$right == 12) & (input$answer == "A")){
+      "Sorry, please try again."
+    }
+    else if ((c$right == 12) & (input$answer == "C")){
+      "Sorry, please try again."
+    }
+    else if ((c$right == 13) & (input$answer == "A")){
+      "Correct!"
+    }
+    else if ((c$right == 13) & (input$answer == "B")){
+      "Sorry, please try again."
+    }
+    else if ((c$right == 13) & (input$answer == "C")){
+      "Sorry, please try again."
+    }
+    else if ((c$right == 14) & (input$answer == "C")){
+      "Correct!"
+    }
+    else if ((c$right == 14) & (input$answer == "B")){
+      "Sorry, please try again."
+    }
+    else if ((c$right == 14) & (input$answer == "A")){
+      "Sorry, please try again."
+    }
+    else if ((c$right == 15) & (input$answer == "C")){
+      "Correct!"
+    }
+    else if ((c$right == 15) & (input$answer == "B")){
+      "Sorry, please try again."
+    }
+    else if ((c$right == 15) & (input$answer == "A")){
+      "Sorry, please try again."
+    }
+    else if ((c$right == 16) & (input$answer == "A")){
+      "Correct!"
+    }
+    else if ((c$right == 16) & (input$answer == "B")){
+      "Sorry, please try again."
+    }
+    else if ((c$right == 16) & (input$answer == "C")){
+      "Sorry, please try again."
+    }
+    else if ((c$right == 17) & (input$answer == "A")){
+      "Correct!"
+    }
+    else if ((c$right == 17) & (input$answer == "B")){
+      "Sorry, please try again."
+    }
+    else if ((c$right == 17) & (input$answer == "C")){
       "Sorry, please try again."
     }
   })
