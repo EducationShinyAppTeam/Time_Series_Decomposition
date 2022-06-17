@@ -45,51 +45,35 @@ ui <- list(
       tags$head(
         tags$link(rel = "stylesheet", type = "text/css", href = "Feature.css")
       ),
-      # tags$head( 
-      #   tags$style(HTML(
-      #     '.popover-title{
-      #     color: black;
-      #     background-color: orange }'
-      #   ))),
       tabItems(
         # First tab content
         ### intro ----
         tabItem(
           tabName = "intro",
-          #tags$a(href='http://stat.psu.edu/',tags$img(src='PS-HOR-RGB-2C.png', align = "left", width = 180)),
-          #    br(),br(),br(),
                 h3(tags$b("About:")),
-                h4("This application is to help you better understand seasonality, long term trend and random components of time series plot."),
+                h4("This application is to help you better understand 
+                   seasonality, long term trend and random components of time 
+                   series plot."),
                 br(),
                 h3(strong("Instructions:")),
-          tags$ol(
-                tags$li("You can explore time series plots for several 
-                           different datasets from real life."),
-                tags$li("Check the 'decompose' box to look at seasonality, 
-                        long term trend as well as random components separately."),
-                tags$li("You can look at the information of each dataset by 
-                        checking 'information' box."),
-                tags$li("Then you can hit 'NEXT' to go to the simulate plots part."),
-                tags$li("You can modify trend, seasonality and random components 
-                        and see how the time series plot changes."),
-                tags$li("Then you can hit 'NEXT' to go to the challenge part."),
-                tags$li("In the challenge part, try to match the decompositions 
-                        to the observed time series plot."),
-                tags$li("Play with it and have fun!"),
-                br(),
-          ),
-                div(style = "text-align: center" ,bsButton("start", "Explore", size = "large", style = "warning", icon = icon("bolt"))),
-                h3(strong("Acknowledgements:")),
-                h4("This app was developed and coded by Jiajun Gao."),
-                h4("Built-in datasets are downloaded from finance.yahoo.com, w2.weather.gov, and fred.stlouisfed.org")
-        ),
+          h4(tags$li("You can explore time series plots for several different datasets from real life.")),
+                        h4(tags$li("Check the 'decompose' box to look at seasonality, long term trend as well as random components separately.")),
+                        h4(tags$li("You can look at the information of each dataset by checking 'information' box.")),
+                        h4(tags$li("Then you can hit 'NEXT' to go to the simulate plots part.")),
+                        h4(tags$li("You can modify trend, seasonality and random components and see how the time series plot changes.")),
+                        h4(tags$li("Then you can hit 'NEXT' to go to the challenge part.")),
+                        h4(tags$li("In the challenge part, try to match the decompositions to the observed time series plot.")),
+                        h4(tags$li("Play with it and have fun!")),
+                        br(),
+                        div(style = "text-align: center" ,bsButton("start", "Explore", size = "large", style = "warning", icon = icon("bolt"))),
+                        h3(strong("Acknowledgements:")),
+                        h4("This app was developed and coded by Jiajun Gao."),
+                        h4("Built-in datasets are downloaded from finance.yahoo.com, w2.weather.gov, and fred.stlouisfed.org")
+                ),
         # Second tab content
         ### plots page ----
         tabItem(
           tabName = "plots",
-                # div(style="display: inline-block;vertical-align:top;",
-                #     tags$a(href='https://shinyapps.science.psu.edu/',tags$img(src='homebut.PNG', width = 15))
-                # ),
             fluidRow(
               column(4,
                 wellPanel(
@@ -133,13 +117,6 @@ ui <- list(
                          wellPanel(
                            style = "background-color: #EAF2F8",
                            plotOutput("decomposeplot", height = 600)
-                           # if (input$decompose == "TRUE") {bsPopover("decomposeplot", " ", 
-                           #           "This shows the original plot, seasonality, long term trend and remainder of the dataset", 
-                           #           place = "left", trigger = "hover")
-                           # }
-                           #   plotOutput("decompose1", height = 250),
-                           #   plotOutput("decompose2", height = 250),
-                           #   plotOutput("decompose3", height = 250)
                          )
                   )
                 )
@@ -149,14 +126,6 @@ ui <- list(
         ### Simulate polts ----
         tabItem(
           tabName = "modify",
-                # div(style="display: inline-block;vertical-align:top;",
-                #     tags$a(href='https://shinyapps.science.psu.edu/',tags$img(src='homebut.PNG', width = 15))
-                # ),
-                # tags$style(HTML(".js-irs-0 .irs-single, .js-irs-0 .irs-bar-edge, .js-irs-0 .irs-bar {background: orange}")),
-                # tags$style(HTML(".js-irs-1 .irs-single, .js-irs-1 .irs-bar-edge, .js-irs-1 .irs-bar {background: orange}")),
-                # tags$style(HTML(".js-irs-2 .irs-single, .js-irs-2 .irs-bar-edge, .js-irs-2 .irs-bar {background: orange}")),
-                # tags$style(HTML(".js-irs-3 .irs-single, .js-irs-3 .irs-bar-edge, .js-irs-3 .irs-bar {background: orange}")),
-                # 
             fluidRow(
               column(4,
                 wellPanel(
@@ -164,8 +133,6 @@ ui <- list(
                   sliderInput(inputId = "trend", label = "slope of long term trend", min = -15, max = 15, value = 0),
                   sliderInput(inputId = "season", label = "seasonality (amplitude)", min = 0, max = 200, value = 0),
                   sliderInput(inputId = "random", label = "random error (s.d. of the error)", min = 0, max = 200, value = 0),
-                           #sliderInput(inputId = "freq", label = "seasonality (frequency)", min = 1, max = 12, value = 1),
-                           #####try mulyiple
                   selectInput(
                     "simulation",
                     label=h3("Simulation"),
@@ -203,9 +170,6 @@ ui <- list(
         #fourth tab content
         #### Challenge ----
         tabItem(tabName = "challenge",
-                # div(style="display: inline-block;vertical-align:top;",
-                #     tags$a(href='https://shinyapps.science.psu.edu/',tags$img(src='homebut.PNG', width = 15))
-                # ),
                 verbatimTextOutput("question1"),
                 
                 wellPanel(
