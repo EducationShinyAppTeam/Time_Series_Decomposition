@@ -3,38 +3,37 @@ library(shinydashboard)
 library(shiny)
 library(shinyjs)
 library(shinyBS)
-
+library(shinyWidgets)
 library(boastUtils)
 
 # Define UI for App ----
 
+# UI ----
 ui <- list(
   dashboardPage(
-    skin="yellow",
+    skin = "purple",
     ## Header ----
     dashboardHeader(
-      title = "Time Series Decomposition", 
+      title = "Time Series Decomposition",
       titleWidth = 250,
       tags$li(class = "dropdown", actionLink("info", icon("info"))),
       tags$li(
         class = "dropdown",
-        boastUtils::surveyLink(name = "Time_Series_Decomposition")
-        ),
-      tags$li(
-        class = "drowdown",
-        tags$a(href = 'https://shinyapps.science.psu.edu/', icon("home"))
+        tags$a(href = 'https://shinyapps.science.psu.edu/',
+               icon("home")
         )
-      ),
+      )
+    ),
     ## Sidebar ----
     dashboardSidebar(
       width = 250,
       sidebarMenu(
-        id="tabs",
-        menuItem("Overview", tabName = "intro", icon = icon("dashboard")),
+        id = "tabs",
+        menuItem("Overview", tabName = "intro", icon = icon("tachometer-alt")),
         menuItem("Explore Plots", tabName = "plots", icon = icon("wpexplorer")),
         menuItem("Simulate plots", tabName = "modify", icon = icon("edit")),
         menuItem("Challenge", tabName = "challenge", icon = icon("cogs"))
-        ),
+      ),
       tags$div(
         class = "sidebar-logo",
         boastUtils::sidebarFooter()
@@ -42,177 +41,231 @@ ui <- list(
     ),
     ## Body ----
     dashboardBody(
-      tags$head(
-        tags$link(rel = "stylesheet", type = "text/css", href = "Feature.css")
-      ),
       tabItems(
-        # First tab content
-        ### intro ----
+        ### Overview ----
         tabItem(
           tabName = "intro",
-                h3(tags$b("About:")),
-                h4("This application is to help you better understand 
-                   seasonality, long term trend and random components of time 
-                   series plot."),
-                br(),
-                h3(strong("Instructions:")),
-          h4(tags$li("You can explore time series plots for several different datasets from real life.")),
-                        h4(tags$li("Check the 'decompose' box to look at seasonality, long term trend as well as random components separately.")),
-                        h4(tags$li("You can look at the information of each dataset by checking 'information' box.")),
-                        h4(tags$li("Then you can hit 'NEXT' to go to the simulate plots part.")),
-                        h4(tags$li("You can modify trend, seasonality and random components and see how the time series plot changes.")),
-                        h4(tags$li("Then you can hit 'NEXT' to go to the challenge part.")),
-                        h4(tags$li("In the challenge part, try to match the decompositions to the observed time series plot.")),
-                        h4(tags$li("Play with it and have fun!")),
-                        br(),
-                        div(style = "text-align: center" ,bsButton("start", "Explore", size = "large", style = "warning", icon = icon("bolt"))),
-                        h3(strong("Acknowledgements:")),
-                        h4("This app was developed and coded by Jiajun Gao."),
-                        h4("Built-in datasets are downloaded from finance.yahoo.com, w2.weather.gov, and fred.stlouisfed.org")
-                ),
-        # Second tab content
-        ### plots page ----
+          withMathJax(),
+          h1("Time Series Decomposition"),
+          br(),
+          p("This application is to help you better understand 
+             seasonality, long term trend and random components of time 
+             series plot."),
+          h2("Instructions"),
+          tags$ol(
+            tags$li("You can explore time series plots for several different 
+                    datasets from real life."),
+            tags$li("Check the 'decompose' box to look at seasonality, long 
+                    term trend as well as random components separately."),
+            tags$li("You can look at the information of each dataset by 
+                    checking 'information' box."),
+            tags$li("Then you can hit 'NEXT' to go to the simulate plots part."),
+            tags$li("You can modify trend, seasonality and random components 
+                    and see how the time series plot changes."),
+            tags$li("Then you can hit 'NEXT' to go to the challenge part."),
+            tags$li("In the challenge part, try to match the decompositions to 
+                    the observed time series plot."),
+            tags$li("Play with it and have fun!")
+          ),
+          br(),
+          div(
+            style = "text-align: center",
+            bsButton(
+              inputId = "start", 
+              label = "Explore", 
+              size = "large", 
+              style = "warning", 
+              icon = icon("bolt")
+            )
+          ),
+          br(),br(),
+          h2("Acknowledgements"),
+          p("This app was developed and coded by Jiajun Gao.",
+            br(),br(),
+            "Cite this app as:",
+            br(),
+            citeApp(),
+            br(),br(),
+            div(class = "updated",  "Last Update: 00/00/2022 by NJH.")
+          )
+        ),
+        ### Plots ----
         tabItem(
           tabName = "plots",
-            fluidRow(
-              column(4,
-                wellPanel(
-                style = "background-color: #EAF2F8",
+          fluidRow(
+            column(
+              width = 4,
+              wellPanel(
                 selectInput(
-                  "dataset",
-                  label=h3("Dataset"),
-                  choices = list("Ford Stock Price", "Berkshire Hathaway Stock Price", 
-                    "S&P 500", "State College Weather", 
-                    "GDP growth rate of U.S." ),
+                  inputId = "dataset",
+                  label="Dataset",
+                  choices = c("Ford Stock Price", "Berkshire Hathaway Stock Price", 
+                              "S&P 500", "State College Weather", 
+                              "GDP growth rate of U.S." ),
                   selected = "Ford Stock Price"
                 ),
                 br(),
-                checkboxInput(inputId="decompose", label = list("decompose"), value = TRUE),
+                checkboxInput(
+                  inputId="decompose", 
+                  label = list("decompose"), 
+                  value = TRUE
+                ),
                 br(),
-                checkboxInput(inputId = "info", label = "information")
-              )),
-                fluidRow(
-                  column(7,
-                    wellPanel(
-                    style = "background-color: #EAF2F8",
-                    plotOutput("timeseriesplot", height = 300),
-                    bsPopover("timeseriesplot", " ", 
-                      "This is time series plot of the chosen dataset", 
-                      place = "right", trigger = "hover")
-                      )
-                    )
-                  ),
-                  column(4,
-                         wellPanel(
-                           style = "background-color: #EAF2F8",
-                           textOutput("information")
-                         ),
-                         br(),
-                         br(),
-                         style = "text-align: center" , bsButton("nextpart", "NEXT", size = "large", style = "warning", center = TRUE)),
-                  bsPopover("nextpart", " ", 
-                            "Go to simulate plots.", 
-                            place = "right", trigger = "hover"),
-                  column(7, 
-                         wellPanel(
-                           style = "background-color: #EAF2F8",
-                           plotOutput("decomposeplot", height = 600)
-                         )
-                  )
+                checkboxInput(
+                  inputId = "info", 
+                  label = "information"
                 )
+              )
+            ),
+            fluidRow(
+              column(
+                width =7,
+                wellPanel(
+                  plotOutput(
+                    "timeseriesplot", 
+                    height = 300
+                  ),
+                )
+              )
+            ),
+            column(
+              width = 4,
+              wellPanel(
+                textOutput("information")
+              ),
+              br(),br(),
+              style = "text-align: center",
+              bsButton(
+                "nextpart", 
+                "NEXT", 
+                size = "large", 
+                style = "warning", 
+                center = TRUE)
+            ),
+            bsPopover("nextpart", " ", 
+                      "Go to simulate plots.", 
+                      place = "right", trigger = "hover"),
+            column(
+              width = 7, 
+              wellPanel(
+                plotOutput("decomposeplot", height = 600)
+              )
+            )
+          )
         ),
-        
-        #third tab content
-        ### Simulate polts ----
+        ### Simulate Plots ----
         tabItem(
           tabName = "modify",
-            fluidRow(
-              column(4,
-                wellPanel(
-                  style = "background-color: #EAF2F8",
-                  sliderInput(inputId = "trend", label = "slope of long term trend", min = -15, max = 15, value = 0),
-                  sliderInput(inputId = "season", label = "seasonality (amplitude)", min = 0, max = 200, value = 0),
-                  sliderInput(inputId = "random", label = "random error (s.d. of the error)", min = 0, max = 200, value = 0),
-                  selectInput(
-                    "simulation",
-                    label=h3("Simulation"),
-                    choices = list("single process", "multiple processes"),
-                    selected = "single process")
-                    ),
-                  conditionalPanel(
-                    condition = "input.simulation == 'single process'",
-                    style = "text-align: center" , 
-                    bsButton(
-                      "newpro", "New Process", 
-                      size = "middle", 
-                      style = "warning")
-                    ),
-                    ####add a conditonal slide
-                    conditionalPanel(
-                      condition = "input.simulation == 'multiple processes'",
-                      sliderInput("path", "# of paths", min = 1, max = 3, value = 1))
-                  ),
-                  column(8,
-                    wellPanel(
-                      style = "background-color: #EAF2F8",
-                      plotOutput("simplot", height = 500)
-                    )
-                  )
+          fluidRow(
+            column(
+              width = 4,
+              wellPanel(
+                sliderInput(
+                  inputId = "trend", 
+                  label = "slope of long term trend", 
+                  min = -15, max = 15, value = 0
                 ),
-                br(),
-                fluidRow(
-                  div(style = "text-align: center" ,bsButton("next2", "NEXT", size = "large", style = "warning")),
-                  bsPopover("next2", " ", 
-                            "Go to the challenge part", 
-                            place = "right", trigger = "hover")
-                )
+                sliderInput(
+                  inputId = "season", 
+                  label = "seasonality (amplitude)", 
+                  min = 0, max = 200, value = 0
+                ),
+                sliderInput(
+                  inputId = "random", 
+                  label = "random error (s.d. of the error)", 
+                  min = 0, max = 200, value = 0
+                ),
+                selectInput(
+                  "simulation",
+                  label="Simulation",
+                  choices = c("single process", "multiple processes"),
+                  selected = "single process"
+                ),
+                conditionalPanel(
+                  condition = "input.simulation == 'single process'",
+                  style = "text-align: center" , 
+                  bsButton(
+                    "newpro", 
+                    "New Process", 
+                    size = "middle", 
+                    style = "warning")
+                ),
+                ####add a conditonal slide
+                conditionalPanel(
+                  condition = "input.simulation == 'multiple processes'",
+                  sliderInput("path", "# of paths", min = 1, max = 3, value = 1))
+              )
+            ),
+            column(
+              width = 8,
+              wellPanel(
+                style = "background-color: #EAF2F8",
+                plotOutput("simplot", height = 500)
+              )
+            )
+          ),
+          br(),
+          fluidRow(
+            div(style = "text-align: center",
+                bsButton("next2", "NEXT", size = "large", style = "warning")),
+            bsPopover("next2", " ", 
+                      "Go to the challenge part", 
+                      place = "right", trigger = "hover"
+            )
+          )
         ),
-        #fourth tab content
-        #### Challenge ----
-        tabItem(tabName = "challenge",
-                verbatimTextOutput("question1"),
-                
-                wellPanel(
-                  style = "background-color: #EAF2F8",
-                  fluidRow(
-                    column(5,
-                      imageOutput("questiongraph", height = 280),
-                      tags$head(tags$style(HTML("#question1 {font-size: 22px;}"))),
-                      tags$style(type='text/css', '#question1 {background-color: #ffffff; color: black;}') 
-                            ),
-                            column(2, offset = 2,
-                                   br(),
-                                   br(),
-                                   actionButton("newchallenge","New Challenge"),
-                                   br(),
-                                   br(),
-                                   br(),
-                                   selectInput("answer", "Select your answer", choices = list("A", "B", "C", ""), selected = "")
-                            )
-                          ),
-                          br(),
-                          fluidRow(
-                            column(4, offset = 6,
-                                   verbatimTextOutput("response")
-                            ))
+        ### Challenge ----
+        tabItem(
+          tabName = "challenge",
+          verbatimTextOutput("question1"),
+          wellPanel(
+            fluidRow(
+              column(
+                width = 5,
+                imageOutput(
+                  "questiongraph", 
+                  height = 280
                 ),
-                
-                wellPanel(style = "background-color: #EAF2F8",
-                          fluidRow(
-                            column(4,
-                                   imageOutput("choice1", height = 250)),
-                            column(4,
-                                   imageOutput("choice2", height = 250)),
-                            column(4,
-                                   imageOutput("choice3", height = 250))
-                          )
-                )
+              ),
+              column(
+                width = 2, 
+                offset = 2,
+                br(),br(),
+                actionButton("newchallenge","New Challenge"),
+                br(),br(),br(),
+                selectInput("answer", "Select your answer", 
+                            choices = list("A", "B", "C", ""), 
+                            selected = "")
+              )
+            ),
+            br(),
+            fluidRow(
+              column(
+                width = 4, 
+                offset = 6,
+                verbatimTextOutput("response")
+              )
+            )
+          ),
+          wellPanel(
+            fluidRow(
+              column(
+                width = 4,
+                imageOutput("choice1", height = 250)),
+              column(
+                width = 4,
+                imageOutput("choice2", height = 250)),
+              column(
+                width = 4,
+                imageOutput("choice3", height = 250))
+            )
+          )
         )
       )
     )
   )
+  
 )
-
 
 server <- function(input, output, session) {
   
