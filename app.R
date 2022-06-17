@@ -74,7 +74,6 @@ ui <- list(
               inputId = "start", 
               label = "Explore", 
               size = "large", 
-              style = "warning", 
               icon = icon("bolt")
             )
           ),
