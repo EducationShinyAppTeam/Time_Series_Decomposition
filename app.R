@@ -30,9 +30,10 @@ ui <- list(
       sidebarMenu(
         id = "tabs",
         menuItem("Overview", tabName = "intro", icon = icon("tachometer-alt")),
-        menuItem("Explore Plots", tabName = "plots", icon = icon("wpexplorer")),
-        menuItem("Simulate plots", tabName = "modify", icon = icon("edit")),
-        menuItem("Challenge", tabName = "challenge", icon = icon("cogs"))
+        menuItem("Examples", tabName = "plots", icon = icon("wpexplorer")),
+        menuItem("Explore", tabName = "modify", icon = icon("edit")),
+        menuItem("Challenge", tabName = "challenge", icon = icon("cogs")),
+        menuItem("References", tabName = "references", icon = icon("leanpub"))
       ),
       tags$div(
         class = "sidebar-logo",
@@ -137,9 +138,9 @@ ui <- list(
               bsButton(
                 "nextpart", 
                 "NEXT", 
-                size = "large", 
-                style = "warning", 
-                center = TRUE)
+                size = "large",
+                center = TRUE
+              )
             ),
             bsPopover("nextpart", " ", 
                       "Go to simulate plots.", 
@@ -187,7 +188,7 @@ ui <- list(
                     "newpro", 
                     "New Process", 
                     size = "middle", 
-                    style = "warning")
+                  )
                 ),
                 ####add a conditonal slide
                 conditionalPanel(
@@ -206,7 +207,7 @@ ui <- list(
           br(),
           fluidRow(
             div(style = "text-align: center",
-                bsButton("next2", "NEXT", size = "large", style = "warning")),
+                bsButton("next2", "NEXT", size = "large")),
             bsPopover("next2", " ", 
                       "Go to the challenge part", 
                       place = "right", trigger = "hover"
@@ -259,6 +260,70 @@ ui <- list(
                 imageOutput("choice3", height = 250))
             )
           )
+        ),
+        ### References ----
+        tabItem(
+          tabName = "references",
+          withMathJax(),
+          h2("References"),
+          p(
+            class = "hangingindent",
+            "Bailey, E. (2022). shinyBS: Twitter bootstrap components for shiny.
+            (v 0.61.1). [R package]. Available from 
+            https://CRAN.R-project.org/package=shinyBS"
+          ),
+          p(
+            class = "hangingindent",
+            "Carey, R. and Hatfield, N. J. (2022). boastUtils: BOAST Utilities.
+            (v 0.1.12.3). [R package]. Available from
+            https://github.com/EducationShinyAppTeam/boastUtils"
+          ),
+          p(
+            class = "hangingindent",
+            "Chang, W. and Borges Ribeio, B. (2021). shinydashboard: Create
+            dashboards with 'Shiny'. (v. 0.7.2). [R package]. Available from
+            https://CRAN.R-project.org/package=shinydashboard"
+          ),
+          p(
+            class = "hangingindent",
+            "Chang, W., Cheng, J., Allaire, J., Sievert, C., Schloerke, B., Xie, Y.,
+            Allen, J., McPherson, J., Dipert, A., and Borges, B. (2021). shiny: 
+            Web application framework for R, R package. (v 1.7.1). [R package]. 
+            Available from https://CRAN.R-project.org/package=shiny"
+          ),
+          p(
+            class = "hangingindent", 
+            "Neudecker, A. (2021), shinyMatrix: Shiny matrix input field. (v 0.6.0).
+            [R package]. Available from https://CRAN.R-project.org/package=shinyMatrix"
+          ), 
+          p(
+            class = "hangingindent",
+            "Novomestky, F. (2021, matrixcalc: Collection of functions for 
+            matrix calculations. (v 1.0-5). [R package]. Available from
+            https://CRAN.R-project.org/package=matrixcalc"
+          ),
+          p(
+            class = "hangingindent",
+            "Perrier, V., Meyer, F., and Granjon, D. (2022), shinyWidgets: Custom 
+            Inputs Widgets for Shiny. (v 0.7.0). [R package]. Available from
+            https://CRAN.R-project.org/package=shinyWidgets"
+          ),
+          p(
+            class = "hangingindent",
+            "Wickham, W. (2016), ggplot2: Elegant graphics for data analysis,
+            R Package. Springer-Verlag New York. (v 3.3.6). [R package].
+            Available from https://ggplot2.tidyverse.org"
+          ),
+          p(
+            class = "hangingindent",
+            "Xie, Y., Cheng, J., and Tan, X. (2022). DT: A wrapper of the
+            JavaScript library 'DataTables'. (v 0.23). [R package]. Available 
+            from https://CRAN.R-project.org/package=DT"
+          ),
+          br(),
+          br(),
+          br(),
+          boastUtils::copyrightInfo()
         )
       )
     )
