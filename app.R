@@ -30,8 +30,9 @@ ui <- list(
       sidebarMenu(
         id = "tabs",
         menuItem("Overview", tabName = "intro", icon = icon("tachometer-alt")),
-        menuItem("Examples", tabName = "plots", icon = icon("wpexplorer")),
-        menuItem("Explore", tabName = "modify", icon = icon("edit")),
+        menuItem("Prerequisities", tabName = "prerequisites", icon = icon("book")),
+        menuItem("Examples", tabName = "plots", icon = icon("book")),
+        menuItem("Explore", tabName = "modify", icon = icon("wpexplorer")),
         menuItem("Challenge", tabName = "challenge", icon = icon("cogs")),
         menuItem("References", tabName = "references", icon = icon("leanpub"))
       ),
@@ -89,9 +90,24 @@ ui <- list(
             div(class = "updated",  "Last Update: 00/00/2022 by NJH.")
           )
         ),
+        ### Prerequisities ----
+        tabItem(
+          tabName = "prerequisites",
+          h2("Prerequisites"),
+          box(
+            title = "What is time series decomposition?",
+            status = "primary",
+            collapsible = TRUE,
+            collapsed = TRUE,
+            width = '100%',
+            "Time Series Decomposition deconstructs a time series dataset into 
+            different componenets to explore underlying patterns of the dataset"
+          )
+        ),
         ### Plots ----
         tabItem(
           tabName = "plots",
+          h2("Explore"),
           fluidRow(
             column(
               width = 4,
@@ -111,29 +127,11 @@ ui <- list(
                   value = TRUE
                 ),
                 br(),
-                checkboxInput(
-                  inputId = "info", 
-                  label = "information"
-                )
-              )
-            ),
-            fluidRow(
-              column(
-                width =7,
-                wellPanel(
-                  plotOutput(
-                    "timeseriesplot", 
-                    height = 300
-                  ),
-                )
-              )
-            ),
-            column(
-              width = 4,
-              wellPanel(
-                textOutput("information")
+                # checkboxInput(
+                #   inputId = "info", 
+                #   label = "information"
+                # )
               ),
-              br(),br(),
               style = "text-align: center",
               bsButton(
                 "nextpart", 
@@ -142,15 +140,40 @@ ui <- list(
                 center = TRUE
               )
             ),
+            fluidRow(
+              column(
+                width =7,
+                wellPanel(
+                  plotOutput(
+                    "timeseriesplot", 
+                    height = 500
+                  ),
+                )
+              )
+            ),
+            # column(
+            #   width = 4,
+            #     wellPanel(
+            #     textOutput("information")
+            #   ),
+            #   br(),br(),
+            #   style = "text-align: center",
+            #   bsButton(
+            #     "nextpart", 
+            #     "NEXT", 
+            #     size = "large",
+            #     center = TRUE
+            #   )
+            # ),
             bsPopover("nextpart", " ", 
                       "Go to simulate plots.", 
                       place = "right", trigger = "hover"),
-            column(
-              width = 7, 
-              wellPanel(
-                plotOutput("decomposeplot", height = 600)
-              )
-            )
+            # column(
+            #   width = 7, 
+            #   wellPanel(
+            #     plotOutput("decomposeplot", height = 600)
+            #   )
+            # )
           )
         ),
         ### Simulate Plots ----
@@ -330,7 +353,7 @@ ui <- list(
   )
   
 )
-
+# Server implimentation ----
 server <- function(input, output, session) {
   
   observeEvent(input$start, {
@@ -351,21 +374,21 @@ server <- function(input, output, session) {
         
         #ford2 = decompose(smooth_ford)
         ford2 = decompose(ts_ford)
-        output$decomposeplot <-renderPlot(plot(ford2))
-        
+        # output$decomposeplot <-renderPlot(plot(ford2))
+        output$timeseriesplot <-renderPlot(plot(ford2))
       }
       
       else if (input$decompose == "FALSE"){
         output$decomposeplot = NULL
       }
       
-      if (input$info == "TRUE"){
-        output$information <- renderText("This dataset is monthly stock price (close price) of Ford from July 1988 to June 2017.
-                                         Data retrieved from finance.yahoo.com")
-      }
-      else if (input$info == "FALSE"){
-        output$information = NULL
-      }
+      # if (input$info == "TRUE"){
+      #   output$information <- renderText("This dataset is monthly stock price (close price) of Ford from July 1988 to June 2017.
+      #                                    Data retrieved from finance.yahoo.com")
+      # }
+      # else if (input$info == "FALSE"){
+      #   output$information = NULL
+      # }
     }
     
     else if (input$dataset == "Berkshire Hathaway Stock Price"){
@@ -378,20 +401,21 @@ server <- function(input, output, session) {
       
       if (input$decompose == "TRUE"){
         bh2 = decompose(ts_bh, filter = c(1/24, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/24))
-        output$decomposeplot <-renderPlot(plot(bh2))
+        # output$decomposeplot <-renderPlot(plot(bh2))
+        output$timeseriesplot <-renderPlot(plot(bh2))
       }
       
       else if (input$decompose == "FALSE"){
         output$decompose = NULL
       }
       
-      if (input$info == "TRUE"){
-        output$information <- renderText("This dataset is monthly stock price (close price) of Berkshire Hathaway from July, 1988 to June 2017.
-                                         Data retrieved from finance.yahoo.com")
-      }
-      else if (input$info == "FALSE"){
-        output$information = NULL
-      }
+      # if (input$info == "TRUE"){
+      #   output$information <- renderText("This dataset is monthly stock price (close price) of Berkshire Hathaway from July, 1988 to June 2017.
+      #                                    Data retrieved from finance.yahoo.com")
+      # }
+      # else if (input$info == "FALSE"){
+      #   output$information = NULL
+      # }
     }
     
     else if (input$dataset == "S&P 500"){
@@ -403,20 +427,21 @@ server <- function(input, output, session) {
       
       if (input$decompose == "TRUE"){
         sp2 = decompose(ts_sp, filter = c(1/24, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/24))
-        output$decomposeplot <-renderPlot(plot(sp2))
+        # output$decomposeplot <-renderPlot(plot(sp2))
+        output$timeseriesplot <-renderPlot(plot(sp2))
       }
       
       else if (input$decompose == "FALSE"){
         output$decompose = NULL
       }
       
-      if (input$info == "TRUE"){
-        output$information <- renderText("This dataset is S&P 500 index from January, 1988 to June 2017.
-                                         Data retrieved from finance.yahoo.com")
-      }
-      else if (input$info == "FALSE"){
-        output$information = NULL
-      }
+      # if (input$info == "TRUE"){
+      #   output$information <- renderText("This dataset is S&P 500 index from January, 1988 to June 2017.
+      #                                    Data retrieved from finance.yahoo.com")
+      # }
+      # else if (input$info == "FALSE"){
+      #   output$information = NULL
+      # }
     }
     
     else if (input$dataset == "State College Weather"){
@@ -429,19 +454,20 @@ server <- function(input, output, session) {
       if (input$decompose == "TRUE"){
         
         sc2 = decompose(ts_sc, filter = c(1/24, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/24))
-        output$decomposeplot <-renderPlot(plot(sc2))
+        # output$decomposeplot <-renderPlot(plot(sc2))
+        output$timeseriesplot <-renderPlot(plot(sc2))
       }
       
       else if (input$decompose == "FALSE"){
         output$decomposeplot = NULL
       }
-      if (input$info == "TRUE"){
-        output$information <- renderText("This dataset is monthly mean temperature of State College from January, 1988 to December 2017.
-                                         Data retrieved from w2.weather.gov")
-      }
-      else if (input$info == "FALSE"){
-        output$information = NULL
-      }
+      # if (input$info == "TRUE"){
+      #   output$information <- renderText("This dataset is monthly mean temperature of State College from January, 1988 to December 2017.
+      #                                    Data retrieved from w2.weather.gov")
+      # }
+      # else if (input$info == "FALSE"){
+      #   output$information = NULL
+      # }
     }
     
     else if (input$dataset == "GDP growth rate of U.S."){
@@ -454,32 +480,26 @@ server <- function(input, output, session) {
       if (input$decompose == "TRUE"){
         
         gdp2 = decompose(ts_gdp, filter = c(1/8, 1/4, 1/4, 1/4, 1/8))
-        output$decomposeplot <-renderPlot(plot(gdp2))
+        # output$decomposeplot <-renderPlot(plot(gdp2))
+        output$timeseriesplot <-renderPlot(plot(gdp2))
       }
       
       else if (input$decompose == "FALSE"){
         output$decomposeplot = NULL
       }
-      if (input$info == "TRUE"){
-        output$information <- renderText("This dataset is quarterly GDP growth rate of U.S. from January, 1988 to January 2018.
-                                         Data retrieved from fred.stlouisfed.org")
-      }
-      else if (input$info == "FALSE"){
-        output$information = NULL
-      }
+      # if (input$info == "TRUE"){
+      #   output$information <- renderText("This dataset is quarterly GDP growth rate of U.S. from January, 1988 to January 2018.
+      #                                    Data retrieved from fred.stlouisfed.org")
+      # }
+      # else if (input$info == "FALSE"){
+      #   output$information = NULL
+      # }
     }
-    
-    
-    
-    
   })
   
   observeEvent(input$nextpart, {
     updateTabItems(session, "tabs", "modify")
   })
-  
-  
-  
   
   observeEvent(
     input$simulation,{
