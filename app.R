@@ -179,6 +179,9 @@ ui <- list(
         ### Simulate Plots ----
         tabItem(
           tabName = "modify",
+          h2("Explore Time Series Decomposition"),
+          h6("Use the toggle inputs to simulate time series plots with different
+            inputs"),
           fluidRow(
             column(
               width = 4,
