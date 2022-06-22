@@ -108,6 +108,7 @@ ui <- list(
         tabItem(
           tabName = "plots",
           h2("Explore"),
+          br(),
           fluidRow(
             column(
               width = 4,
@@ -115,7 +116,8 @@ ui <- list(
                 selectInput(
                   inputId = "dataset",
                   label="Dataset",
-                  choices = c("Ford Stock Price", "Berkshire Hathaway Stock Price", 
+                  choices = c(
+                    "Ford Stock Price", "Berkshire Hathaway Stock Price", 
                               "S&P 500", "State College Weather", 
                               "GDP growth rate of U.S." ),
                   selected = "Ford Stock Price"
@@ -127,10 +129,6 @@ ui <- list(
                   value = TRUE
                 ),
                 br(),
-                # checkboxInput(
-                #   inputId = "info", 
-                #   label = "information"
-                # )
               ),
               style = "text-align: center",
               bsButton(
@@ -143,37 +141,16 @@ ui <- list(
             fluidRow(
               column(
                 width =7,
-                wellPanel(
-                  plotOutput(
-                    "timeseriesplot", 
-                    height = 500
-                  ),
-                )
+                uiOutput(outputId = "dataDesc"),
+                plotOutput(
+                  "timeseriesplot", 
+                  # height = 500
+                ),
               )
             ),
-            # column(
-            #   width = 4,
-            #     wellPanel(
-            #     textOutput("information")
-            #   ),
-            #   br(),br(),
-            #   style = "text-align: center",
-            #   bsButton(
-            #     "nextpart", 
-            #     "NEXT", 
-            #     size = "large",
-            #     center = TRUE
-            #   )
-            # ),
             bsPopover("nextpart", " ", 
                       "Go to simulate plots.", 
                       place = "right", trigger = "hover"),
-            # column(
-            #   width = 7, 
-            #   wellPanel(
-            #     plotOutput("decomposeplot", height = 600)
-            #   )
-            # )
           )
         ),
         ### Simulate Plots ----
@@ -243,7 +220,9 @@ ui <- list(
         ### Challenge ----
         tabItem(
           tabName = "challenge",
-          verbatimTextOutput("question1"),
+          # verbatimTextOutput("question1"),
+          h2("Challenge"),
+          p("Test your understanding by trying out these questions"),
           wellPanel(
             fluidRow(
               column(
@@ -254,8 +233,9 @@ ui <- list(
                 ),
               ),
               column(
-                width = 2, 
-                offset = 2,
+                width = 5, 
+                offset = 1,
+                uiOutput(outputId = "questionDisplayed"),
                 br(),br(),
                 actionButton("newchallenge","New Challenge"),
                 br(),br(),br(),
@@ -384,14 +364,6 @@ server <- function(input, output, session) {
       else if (input$decompose == "FALSE"){
         output$decomposeplot = NULL
       }
-      
-      # if (input$info == "TRUE"){
-      #   output$information <- renderText("This dataset is monthly stock price (close price) of Ford from July 1988 to June 2017.
-      #                                    Data retrieved from finance.yahoo.com")
-      # }
-      # else if (input$info == "FALSE"){
-      #   output$information = NULL
-      # }
     }
     
     else if (input$dataset == "Berkshire Hathaway Stock Price"){
@@ -411,14 +383,6 @@ server <- function(input, output, session) {
       else if (input$decompose == "FALSE"){
         output$decompose = NULL
       }
-      
-      # if (input$info == "TRUE"){
-      #   output$information <- renderText("This dataset is monthly stock price (close price) of Berkshire Hathaway from July, 1988 to June 2017.
-      #                                    Data retrieved from finance.yahoo.com")
-      # }
-      # else if (input$info == "FALSE"){
-      #   output$information = NULL
-      # }
     }
     
     else if (input$dataset == "S&P 500"){
@@ -437,14 +401,6 @@ server <- function(input, output, session) {
       else if (input$decompose == "FALSE"){
         output$decompose = NULL
       }
-      
-      # if (input$info == "TRUE"){
-      #   output$information <- renderText("This dataset is S&P 500 index from January, 1988 to June 2017.
-      #                                    Data retrieved from finance.yahoo.com")
-      # }
-      # else if (input$info == "FALSE"){
-      #   output$information = NULL
-      # }
     }
     
     else if (input$dataset == "State College Weather"){
@@ -464,13 +420,6 @@ server <- function(input, output, session) {
       else if (input$decompose == "FALSE"){
         output$decomposeplot = NULL
       }
-      # if (input$info == "TRUE"){
-      #   output$information <- renderText("This dataset is monthly mean temperature of State College from January, 1988 to December 2017.
-      #                                    Data retrieved from w2.weather.gov")
-      # }
-      # else if (input$info == "FALSE"){
-      #   output$information = NULL
-      # }
     }
     
     else if (input$dataset == "GDP growth rate of U.S."){
@@ -490,15 +439,26 @@ server <- function(input, output, session) {
       else if (input$decompose == "FALSE"){
         output$decomposeplot = NULL
       }
-      # if (input$info == "TRUE"){
-      #   output$information <- renderText("This dataset is quarterly GDP growth rate of U.S. from January, 1988 to January 2018.
-      #                                    Data retrieved from fred.stlouisfed.org")
-      # }
-      # else if (input$info == "FALSE"){
-      #   output$information = NULL
-      # }
     }
   })
+  ### Data Description for Explore Plots ----
+  
+  observeEvent(
+    eventExpr = input$dataset,
+    handlerExpr = {
+      datasetDesc <- switch(
+        EXPR = input$dataset,
+        "Ford Stock Price" = "The data set records the stock price of 
+        Ford Motor Company from 1987 to 2017", 
+        "Berkshire Hathaway Stock Price"  = "Insert Context here A", 
+        "S&P 500"  = "Insert Context here B", 
+        "State College Weather"  = "Insert Context here C", 
+        "GDP growth rate of U.S."  = "Insert Context here D"
+      )
+      
+      output$dataDesc<- renderUI(datasetDesc)
+    }
+  )
   
   observeEvent(input$nextpart, {
     updateTabItems(session, "tabs", "modify")
@@ -566,12 +526,7 @@ server <- function(input, output, session) {
           )
           output$simplot <- renderPlot(plot.ts(y.sim2(), ylab = "value", col = rgb(191, 116, 224, maxColorValue = 255), lwd = 2))
         })
-        
-        
       }
-      
-      
-      
       else if (input$simulation == "multiple processes"){
         updateSliderInput(session, "random", value = 0)
         updateSliderInput(session, "trend", value = 0)
@@ -651,12 +606,8 @@ server <- function(input, output, session) {
               }
             })
         
-        
       }
     })
-  
-  
-  
   
   observeEvent(input$next2, {
     updateTabItems(session, "tabs", "challenge")
@@ -670,6 +621,38 @@ server <- function(input, output, session) {
     c$right=sample(1:11,1)
     updateSelectInput(session, inputId = "answer", selected = "")
   })
+  
+  observeEvent(
+    eventExpr = c(input$newchallenge, c),
+    handlerExpr = {
+      questionout <- switch(
+        c$right,
+        "Choose the plot of seasonality of the 
+        following time series plot",
+        "Choose the plot of seasonality of the following 
+        time series plot",
+        "Choose the corresponding time series plot based 
+        on the following decomposed plots",
+        "Choose the plot of long term trend of the 
+        following time series plot",
+        "Choose the plot of seasonality of the following 
+        time series plot",
+        "Choose the corresponding time series plot based 
+        on the following decomposed plots",
+        "Choose the plot of long term trend of the following 
+        time series plot",
+        "Choose the plot of long term trend of the following time series 
+        plot",
+        "Choose the corresponding time series plot based 
+        on the following decomposed plots",
+        "Choose the corresponding time series plot based on the following 
+        decomposed plots",
+        "Choose the plot of seasonality of the following time series plot"
+      )
+      output$questionDisplayed <- renderUI(questionout)
+    }
+  )
+  
   
   output$question1<- renderText({
     if (c$right == 1){
