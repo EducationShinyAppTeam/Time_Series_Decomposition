@@ -5,8 +5,11 @@ library(shinyjs)
 library(shinyBS)
 library(shinyWidgets)
 library(boastUtils)
+library(ggfortify)
+library(ggplot2)
 
 # Define UI for App ----
+
 
 # UI ----
 ui <- list(
@@ -358,7 +361,29 @@ server <- function(input, output, session) {
         #ford2 = decompose(smooth_ford)
         ford2 = decompose(ts_ford)
         # output$decomposeplot <-renderPlot(plot(ford2))
-        output$timeseriesplot <-renderPlot(plot(ford2))
+        
+        ## New plotting system
+        ford3 <- fortify(stats::decompose(ts_ford))
+        ford_plot <- ggplot(ford3, aes(Index)) +
+          geom_line(aes(y = Data, color = "Original_series"), size = 1) +
+          geom_line(aes(y = seasonal, color = "Seasonal"), size = 1) +
+          geom_line(aes(y = remainder, color = "Random"), size = 1) +
+          geom_line(aes(y = trend, colour = "trend"), size = 1) +
+          scale_color_manual(
+            name = "Components",
+            values = c(
+              "Original_series" = "purple",
+              "Seasonal" = "dodgerblue",
+              "Random" = "firebrick",
+              "trend" = "darkblue"
+            )
+          ) + labs(title = "Time Series Decomposition of Ford Stock Price",
+                   x = "Time", y = "Price ($)")
+        # ford_plot <- ggplot(ford3, aes(x = Index, color = group)) +
+        #   geom_density(alpha = 0.5)
+        output$timeseriesplot <-renderPlot(ford_plot)
+        ##
+        # output$timeseriesplot <-renderPlot(plot(ford2))
       }
       
       else if (input$decompose == "FALSE"){
@@ -376,8 +401,19 @@ server <- function(input, output, session) {
       
       if (input$decompose == "TRUE"){
         bh2 = decompose(ts_bh, filter = c(1/24, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/24))
-        # output$decomposeplot <-renderPlot(plot(bh2))
-        output$timeseriesplot <-renderPlot(plot(bh2))
+        # output$decomposeplot <-renderPlot(plot(bh2))\
+        ## New plotting system
+        bh01 <- fortify(stats::decompose(ts_bh))
+        bh_plot <- ggplot(bh01, aes(Index, color = group)) +
+          geom_line(aes(y = Data), color = "purple") +
+          geom_line(aes(y = seasonal), color = " blue") +
+          geom_line(aes(y = remainder), color = "red") +
+          geom_line(aes(y = trend), color = "black")
+        # ford_plot <- ggplot(ford3, aes(x = Index, color = group)) +
+        #   geom_density(alpha = 0.5)
+        output$timeseriesplot <-renderPlot(bh_plot)
+        ##
+        # output$timeseriesplot <-renderPlot(plot(bh2))
       }
       
       else if (input$decompose == "FALSE"){
