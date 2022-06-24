@@ -365,17 +365,17 @@ server <- function(input, output, session) {
         ## New plotting system
         ford3 <- fortify(stats::decompose(ts_ford))
         ford_plot <- ggplot(ford3, aes(Index)) +
-          geom_line(aes(y = Data, color = "Original_series"), size = 1) +
-          geom_line(aes(y = seasonal, color = "Seasonal"), size = 1) +
+          geom_line(aes(y = Data, color = "Original Series"), size = 1) +
           geom_line(aes(y = remainder, color = "Random"), size = 1) +
-          geom_line(aes(y = trend, colour = "trend"), size = 1) +
+          geom_line(aes(y = seasonal, color = "Seasonal"), size = 1) +
+          geom_line(aes(y = trend, colour = "Trend"), size = 1) +
           scale_color_manual(
             name = "Components",
             values = c(
-              "Original_series" = "purple",
+              "Original Series" = "purple",
               "Seasonal" = "dodgerblue",
               "Random" = "firebrick",
-              "trend" = "darkblue"
+              "Trend" = "green"
             )
           ) + labs(title = "Time Series Decomposition of Ford Stock Price",
                    x = "Time", y = "Price ($)")
@@ -405,10 +405,20 @@ server <- function(input, output, session) {
         ## New plotting system
         bh01 <- fortify(stats::decompose(ts_bh))
         bh_plot <- ggplot(bh01, aes(Index, color = group)) +
-          geom_line(aes(y = Data), color = "purple") +
-          geom_line(aes(y = seasonal), color = " blue") +
-          geom_line(aes(y = remainder), color = "red") +
-          geom_line(aes(y = trend), color = "black")
+          geom_line(aes(y = Data, color = "Original Series"), size = 1) +
+          geom_line(aes(y = remainder, color = "Random"), size = 1) +
+          geom_line(aes(y = seasonal, color = "Seasonal"), size = 1) +
+          geom_line(aes(y = trend, colour = "Trend"), size = 1) +
+          scale_color_manual(
+            name = "Components",
+            values = c(
+              "Original Series" = "purple",
+              "Seasonal" = "dodgerblue",
+              "Random" = "firebrick",
+              "Trend" = "yellow"
+            )
+          ) + labs(title = "Time Series Decomposition of Ford Stock Price",
+                   x = "Time", y = "Price ($)")
         # ford_plot <- ggplot(ford3, aes(x = Index, color = group)) +
         #   geom_density(alpha = 0.5)
         output$timeseriesplot <-renderPlot(bh_plot)
@@ -450,7 +460,28 @@ server <- function(input, output, session) {
         
         sc2 = decompose(ts_sc, filter = c(1/24, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/24))
         # output$decomposeplot <-renderPlot(plot(sc2))
-        output$timeseriesplot <-renderPlot(plot(sc2))
+        ## New plotting system
+        ford3 <- fortify(stats::decompose(ts_sc))
+        f_plot <- ggplot(ford3, aes(Index)) +
+          geom_line(aes(y = Data, color = "Original Series"), size = 1) +
+          geom_line(aes(y = remainder, color = "Random"), size = 1) +
+          geom_line(aes(y = seasonal, color = "Seasonal"), size = 1) +
+          geom_line(aes(y = trend, colour = "Trend"), size = 1) +
+          scale_color_manual(
+            name = "Components",
+            values = c(
+              "Original Series" = "purple",
+              "Seasonal" = "dodgerblue",
+              "Random" = "firebrick",
+              "Trend" = "green"
+            )
+          ) + labs(title = "Time Series Decomposition of Ford Stock Price",
+                   x = "Time", y = "Price ($)")
+        # ford_plot <- ggplot(ford3, aes(x = Index, color = group)) +
+        #   geom_density(alpha = 0.5)
+        output$timeseriesplot <-renderPlot(f_plot)
+        ##
+        #output$timeseriesplot <-renderPlot(plot(sc2))
       }
       
       else if (input$decompose == "FALSE"){
