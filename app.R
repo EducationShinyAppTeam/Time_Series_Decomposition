@@ -126,6 +126,34 @@ ui <- list(
                   selected = "Ford Stock Price"
                 ),
                 br(),
+                selectInput(
+                  inputId = "exampleType",
+                  label = "Exploration type",
+                  choices = c (
+                    "Orginal Series", "Decompose"
+                  ),
+                  selected = "Original Series"
+                ),
+                conditionalPanel(
+                  condition = "input.exampleType == 'Decompose'",
+                  fluidRow(
+                    checkboxInput(
+                      inputId = "decomposeDS",
+                      label = "Original Series",
+                      value = FALSE
+                    ),
+                    checkboxInput(
+                      inputId = "seeTrend",
+                      label = "Trend",
+                      value = FALSE
+                    ),
+                    checkboxInput(
+                      inputId = "seeSeasonal",
+                      label = "Seasonal",
+                      value = FALSE
+                    )
+                  )
+                ),
                 checkboxInput(
                   inputId="decompose", 
                   label = list("decompose"), 
