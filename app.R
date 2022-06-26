@@ -391,14 +391,14 @@ server <- function(input, output, session) {
           ford_plot <- ggplot(ford3, aes(Index)) +
             geom_line(aes(y = remainder, color = "Random part"), size = 1) +
             labs(title = "Time Series Decomposition of Ford Stock Price",
-                 x = "Time", y = "Price ($)")
+                 x = "Time", y = "Price ($)") +
             scale_color_manual(
               name = "Components",
               values = c(
-                "Original Series" = "purple",
-                "Seasonal" = "dodgerblue",
-                "Random part" = "firebrick",
-                "Trend" = "green"
+                "Original Series" = boastUtils::boastPalette[1],
+                "Seasonal" = boastUtils::boastPalette[5],
+                "Random part" = boastUtils::boastPalette[2],
+                "Trend" = boastUtils::boastPalette[3]
               )
             )
           if (input$seeOriginal == TRUE) {
