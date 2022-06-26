@@ -120,7 +120,7 @@ ui <- list(
                   inputId = "dataset",
                   label="Dataset",
                   choices = c(
-                    "Ford Stock Price", "Berkshire Hathaway Stock Price", 
+                    "Ford Stock Price", "Unemployment Rate", 
                               "S&P 500", "State College Weather", 
                               "GDP growth rate of U.S." ),
                   selected = "Ford Stock Price"
@@ -368,153 +368,109 @@ ui <- list(
 )
 # Server implimentation ----
 server <- function(input, output, session) {
-  
+  ## Start button ----
   observeEvent(input$start, {
     updateTabItems(session, "tabs", "plots")
   })
-  
+  ## Example plots ----
   observe({
+    ### Ford plot ----
     if (input$dataset == "Ford Stock Price"){
       ford <- read.csv(file = "ford.csv")
       time = ford[[1]]
       price = ford[[5]]
-      #smooth_ford = filter(price, filter = c(1/24, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/24), sides = 2)
       ts_ford = ts(price, frequency = 12, start = c(1988,7), end = c(2018,6))
-      #smooth_ford = ts(smooth_ford, frequency = 12, start = c(1988,7), end = c(2018,6))
-      # output$timeseriesplot <- renderPlot(plot.ts(ts_ford, ylab = "price"))
       ford3 <- fortify(stats::decompose(ts_ford))
+      ford3$ranless <- ford3$Data - ford3$remainder
+      
       output$timeseriesplot <- renderPlot({
         if (input$exampletype == "Orginal Series") {
           plot.ts(ts_ford, ylab = "price")
         }
         else {
           ford_plot <- ggplot(ford3, aes(Index)) +
-            geom_line(aes(y = remainder, color = "firebrick"), size = 1) +
+            geom_line(aes(y = remainder, color = "Random part"), size = 1) +
             labs(title = "Time Series Decomposition of Ford Stock Price",
                  x = "Time", y = "Price ($)")
-            # scale_color_manual(
-            #   name = "Components",
-            #   values = c(
-            #     "Original Series" = "purple",
-            #     "Seasonal" = "dodgerblue",
-            #     "Random" = "firebrick",
-            #     "Trend" = "green"
-            #   )
-            # ) 
+            scale_color_manual(
+              name = "Components",
+              values = c(
+                "Original Series" = "purple",
+                "Seasonal" = "dodgerblue",
+                "Random part" = "firebrick",
+                "Trend" = "green"
+              )
+            )
           if (input$seeOriginal == TRUE) {
-            ford_plot + geom_line(data = ford3, aes(y = Data, color = "purple"), size = 1) 
+            ford_plot <- ford_plot + geom_line(data = ford3, 
+                                               aes(y = ranless, color = "Original Series"), 
+                                               size = 1) 
           }
-          
           if (input$seeTrend == TRUE) {
-            ford_plot + geom_line(data = ford3, aes(y = trend, colour = "green"), size = 1) 
+            ford_plot <- ford_plot + geom_line(data = ford3, 
+                                               aes(y = trend, colour = "Trend"), 
+                                               size = 1)
           }
           if (input$seeSeasonal == TRUE) {
-            ford_plot + geom_line(data = ford3, aes(y = seasonal, color = "dodgerblue"), size = 1) 
+            ford_plot <- ford_plot + geom_line(data = ford3, 
+                                               aes(y = seasonal, color = "Seasonal"), 
+                                               size = 1)
           }
-          #output$timeseriesplot <-renderPlot(ford_plot)
           ford_plot
         }
       })
-
-        #  {
-        #   ford3 <- fortify(stats::decompose(ts_ford))
-        #   ford_plot <- ggplot(ford3, aes(Index)) +
-        #     geom_line(aes(y = remainder, color = "Random"), size = 1) +
-        #     scale_color_manual(
-        #       name = "Components",
-        #       values = c(
-        #         "Original Series" = "purple",
-        #         "Seasonal" = "dodgerblue",
-        #         "Random" = "firebrick",
-        #         "Trend" = "green"
-        #       )
-        #     ) + labs(title = "Time Series Decomposition of Ford Stock Price",
-        #              x = "Time", y = "Price ($)")
-        #   if (input$seeOriginal == TRUE) {
-        #     ford_plot + geom_line(aes(y = Data, color = "Original Series"), size = 1) 
-        #   }
-        #   
-        #   if (input$seeTrend == TRUE) {
-        #     ford_plot + geom_line(aes(y = trend, colour = "Trend"), size = 1) 
-        #   }
-        #   if (input$seeSeasonal == TRUE) {
-        #     ford_plot + geom_line(aes(y = seasonal, color = "Seasonal"), size = 1) 
-        #   }
-        #   output$timeseriesplot <-renderPlot(ford_plot)
-        # }
         
-      }
-      
-      # if (input$decompose == "TRUE"){
-      #   ford2 = decompose(ts_ford)
-      # 
-      #   
-      #   ## New plotting system
-      #   ford3 <- fortify(stats::decompose(ts_ford))
-      #   ford_plot <- ggplot(ford3, aes(Index)) +
-      #     geom_line(aes(y = Data, color = "Original Series"), size = 1) +
-      #     geom_line(aes(y = remainder, color = "Random"), size = 1) +
-      #     geom_line(aes(y = seasonal, color = "Seasonal"), size = 1) +
-      #     geom_line(aes(y = trend, colour = "Trend"), size = 1) +
-      #     scale_color_manual(
-      #       name = "Components",
-      #       values = c(
-      #         "Original Series" = "purple",
-      #         "Seasonal" = "dodgerblue",
-      #         "Random" = "firebrick",
-      #         "Trend" = "green"
-      #       )
-      #     ) + labs(title = "Time Series Decomposition of Ford Stock Price",
-      #              x = "Time", y = "Price ($)")
-      #   # ford_plot <- ggplot(ford3, aes(x = Index, color = group)) +
-      #   #   geom_density(alpha = 0.5)
-      #   output$timeseriesplot <-renderPlot(ford_plot)
-      #   ##
-      # }
-      # 
-      # else if (input$decompose == "FALSE"){
-      #   output$decomposeplot = NULL
-      # }
+    }
     
-    
-    else if (input$dataset == "Berkshire Hathaway Stock Price"){
-      bh <- read.csv(file = "BRK-A.csv")
+    ### Unemployment ----
+    else if (input$dataset == "Unemployment Rate"){
+      bh <- read.csv(file = "UNRATENSA.csv")
       time = bh[[1]]
-      price = bh[[5]]
-      #output$timeseriesplot <- renderPlot(plot.ts(price))
-      ts_bh = ts(price, frequency = 12, start = c(1988,7), end = c(2018,6))
-      output$timeseriesplot <- renderPlot(plot.ts(ts_bh, ylab = "price"))
+      ur = bh[[2]]
+      #ts_bh = ts(ur, frequency = 12, start = c(1988,7), end = c(2018,6))
+      ts_bh = ts(ur, frequency = 12, start = c(1948,1), end = c(2021,6))
+      #output$timeseriesplot <- renderPlot(plot.ts(ts_bh, ylab = "price"))
       
-      if (input$decompose == "TRUE"){
-        bh2 = decompose(ts_bh, filter = c(1/24, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/24))
-        # output$decomposeplot <-renderPlot(plot(bh2))\
-        ## New plotting system
-        bh01 <- fortify(stats::decompose(ts_bh))
-        bh_plot <- ggplot(bh01, aes(Index, color = group)) +
-          geom_line(aes(y = Data, color = "Original Series"), size = 1) +
-          geom_line(aes(y = remainder, color = "Random"), size = 1) +
-          geom_line(aes(y = seasonal, color = "Seasonal"), size = 1) +
-          geom_line(aes(y = trend, colour = "Trend"), size = 1) +
+      unr_dec <- fortify(stats::decompose(ts_bh))
+      unr_dec$ranless <- unr_dec$Data - unr_dec$remainder
+      
+      output$timeseriesplot <- renderPlot({
+        if (input$exampletype == "Orginal Series") {
+          plot.ts(ts_bh, ylab = "Unemployment Rate")
+        }
+        else {
+          unr_plot <- ggplot(unr_dec, aes(Index)) +
+            geom_line(aes(y = remainder, color = "Random part"), size = 1) +
+            labs(title = "Time Series Decomposition of the Unemployment Rate 
+                 in the US",
+                 x = "Time", y = "Price ($)") +
           scale_color_manual(
             name = "Components",
             values = c(
               "Original Series" = "purple",
               "Seasonal" = "dodgerblue",
-              "Random" = "firebrick",
-              "Trend" = "yellow"
+              "Random part" = "firebrick",
+              "Trend" = "green"
             )
-          ) + labs(title = "Time Series Decomposition of Ford Stock Price",
-                   x = "Time", y = "Price ($)")
-        # ford_plot <- ggplot(ford3, aes(x = Index, color = group)) +
-        #   geom_density(alpha = 0.5)
-        output$timeseriesplot <-renderPlot(bh_plot)
-        ##
-        # output$timeseriesplot <-renderPlot(plot(bh2))
-      }
-      
-      else if (input$decompose == "FALSE"){
-        output$decompose = NULL
-      }
+          )
+          if (input$seeOriginal == TRUE) {
+            unr_plot <- unr_plot + geom_line(data = unr_dec, 
+                                               aes(y = ranless, color = "Original Series"), 
+                                               size = 1) 
+          }
+          if (input$seeTrend == TRUE) {
+            unr_plot <- unr_plot + geom_line(data = unr_dec, 
+                                               aes(y = trend, colour = "Trend"), 
+                                               size = 1)
+          }
+          if (input$seeSeasonal == TRUE) {
+            unr_plot <- unr_plot + geom_line(data = unr_dec, 
+                                               aes(y = seasonal, color = "Seasonal"), 
+                                               size = 1)
+          }
+          unr_plot
+        }
+      })
     }
     
     else if (input$dataset == "S&P 500"){
@@ -535,44 +491,53 @@ server <- function(input, output, session) {
       }
     }
     
+    ### SCE weather ----
     else if (input$dataset == "State College Weather"){
       sc <- read.csv(file = "StateCollegeWeather.csv")
       time = sc[[1]]
       temp = sc[[2]]
       ts_sc = ts(temp, frequency = 12, start = c(1988,1), end = c(2017,12))
-      output$timeseriesplot <- renderPlot(plot.ts(ts_sc, ylab = "temperature"))
+      #output$timeseriesplot <- renderPlot(plot.ts(ts_sc, ylab = "temperature"))
       
-      if (input$decompose == "TRUE"){
-        
-        sc2 = decompose(ts_sc, filter = c(1/24, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/24))
-        # output$decomposeplot <-renderPlot(plot(sc2))
-        ## New plotting system
-        ford3 <- fortify(stats::decompose(ts_sc))
-        f_plot <- ggplot(ford3, aes(Index)) +
-          geom_line(aes(y = Data, color = "Original Series"), size = 1) +
-          geom_line(aes(y = remainder, color = "Random"), size = 1) +
-          geom_line(aes(y = seasonal, color = "Seasonal"), size = 1) +
-          geom_line(aes(y = trend, colour = "Trend"), size = 1) +
+      sc_dec <- fortify(stats::decompose(ts_sc))
+      sc_dec$ranless <- sc_dec$Data - sc_dec$remainder
+      
+      output$timeseriesplot <- renderPlot({
+        if (input$exampletype == "Orginal Series") {
+          plot.ts(ts_sc, ylab = "Temperature")
+        }
+        else {
+          sc_plot <- ggplot(sc_dec, aes(Index)) +
+            geom_line(aes(y = remainder, color = "Random part"), size = 1) +
+            labs(title = "Time Series Decomposition of State College Weather",
+                 x = "Time", y = "Temperature") +
           scale_color_manual(
             name = "Components",
             values = c(
               "Original Series" = "purple",
               "Seasonal" = "dodgerblue",
-              "Random" = "firebrick",
+              "Random part" = "firebrick",
               "Trend" = "green"
             )
-          ) + labs(title = "Time Series Decomposition of Ford Stock Price",
-                   x = "Time", y = "Price ($)")
-        # ford_plot <- ggplot(ford3, aes(x = Index, color = group)) +
-        #   geom_density(alpha = 0.5)
-        output$timeseriesplot <-renderPlot(f_plot)
-        ##
-        #output$timeseriesplot <-renderPlot(plot(sc2))
-      }
-      
-      else if (input$decompose == "FALSE"){
-        output$decomposeplot = NULL
-      }
+          )
+          if (input$seeOriginal == TRUE) {
+            sc_plot <- sc_plot + geom_line(data = sc_dec, 
+                                               aes(y = ranless, color = "Original Series"), 
+                                               size = 1) 
+          }
+          if (input$seeTrend == TRUE) {
+            sc_plot <- sc_plot + geom_line(data = sc_dec, 
+                                               aes(y = trend, colour = "Trend"), 
+                                               size = 1)
+          }
+          if (input$seeSeasonal == TRUE) {
+            sc_plot <- sc_plot + geom_line(data = sc_dec, 
+                                               aes(y = seasonal, colour = "Seasonal"), 
+                                               size = 1)
+          }
+          sc_plot
+        }
+      })
     }
     
     else if (input$dataset == "GDP growth rate of U.S."){
