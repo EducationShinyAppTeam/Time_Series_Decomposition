@@ -151,14 +151,11 @@ ui <- list(
                       label = "Seasonal",
                       value = FALSE
                     )
-                  )
-                ),
-                checkboxInput(
-                  inputId="decompose", 
-                  label = list("decompose"), 
-                  value = TRUE
-                ),
-                br(),
+                  ),
+                  p("Note: the original series line in the decomposition plot
+                  does not contain the random part. Instead the random part 
+                  is plotted as a separate line."),
+                )
               ),
               style = "text-align: center",
               bsButton(
@@ -427,10 +424,7 @@ server <- function(input, output, session) {
       bh <- read.csv(file = "UNRATENSA.csv")
       time = bh[[1]]
       ur = bh[[2]]
-      #ts_bh = ts(ur, frequency = 12, start = c(1988,7), end = c(2018,6))
       ts_bh = ts(ur, frequency = 12, start = c(1948,1), end = c(2021,6))
-      #output$timeseriesplot <- renderPlot(plot.ts(ts_bh, ylab = "price"))
-      
       unr_dec <- fortify(stats::decompose(ts_bh))
       unr_dec$ranless <- unr_dec$Data - unr_dec$remainder
       
@@ -447,10 +441,10 @@ server <- function(input, output, session) {
           scale_color_manual(
             name = "Components",
             values = c(
-              "Original Series" = "purple",
-              "Seasonal" = "dodgerblue",
-              "Random part" = "firebrick",
-              "Trend" = "green"
+              "Original Series" = boastUtils::boastPalette[1],
+              "Seasonal" = boastUtils::boastPalette[5],
+              "Random part" = boastUtils::boastPalette[2],
+              "Trend" = boastUtils::boastPalette[3]
             )
           )
           if (input$seeOriginal == TRUE) {
@@ -478,17 +472,47 @@ server <- function(input, output, session) {
       time = bh[[1]]
       price = bh[[5]]
       ts_sp = ts(price, frequency = 12, start = c(1988,1), end = c(2018,6))
-      output$timeseriesplot <- renderPlot(plot.ts(ts_sp, ylab = " "))
+      #output$timeseriesplot <- renderPlot(plot.ts(ts_sp, ylab = " "))
       
-      if (input$decompose == "TRUE"){
-        sp2 = decompose(ts_sp, filter = c(1/24, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/12, 1/24))
-        # output$decomposeplot <-renderPlot(plot(sp2))
-        output$timeseriesplot <-renderPlot(plot(sp2))
-      }
+      sp_dec <- fortify(stats::decompose(ts_sp))
+      sp_dec$ranless <- sp_dec$Data - sp_dec$remainder
       
-      else if (input$decompose == "FALSE"){
-        output$decompose = NULL
-      }
+      output$timeseriesplot <- renderPlot({
+        if (input$exampletype == "Orginal Series") {
+          plot.ts(ts_sp, ylab = "Price ($)")
+        }
+        else {
+          sp_plot <- ggplot(sp_dec, aes(Index)) +
+            geom_line(aes(y = remainder, color = "Random part"), size = 1) +
+            labs(title = "Price of the Standard and Poor 500 Index price",
+                 x = "Time", y = "Price ($)") +
+            scale_color_manual(
+              name = "Components",
+              values = c(
+                "Original Series" = boastUtils::boastPalette[1],
+                "Seasonal" = boastUtils::boastPalette[5],
+                "Random part" = boastUtils::boastPalette[2],
+                "Trend" = boastUtils::boastPalette[3]
+              )
+            )
+          if (input$seeOriginal == TRUE) {
+            sp_plot <- sp_plot + geom_line(data = sp_dec, 
+                                             aes(y = ranless, color = "Original Series"), 
+                                             size = 1) 
+          }
+          if (input$seeTrend == TRUE) {
+            sp_plot <- sp_plot + geom_line(data = sp_dec, 
+                                             aes(y = trend, colour = "Trend"), 
+                                             size = 1)
+          }
+          if (input$seeSeasonal == TRUE) {
+            sp_plot <- sp_plot + geom_line(data = sp_dec, 
+                                             aes(y = seasonal, color = "Seasonal"), 
+                                             size = 1)
+          }
+          sp_plot
+        }
+      })
     }
     
     ### SCE weather ----
@@ -514,10 +538,10 @@ server <- function(input, output, session) {
           scale_color_manual(
             name = "Components",
             values = c(
-              "Original Series" = "purple",
-              "Seasonal" = "dodgerblue",
-              "Random part" = "firebrick",
-              "Trend" = "green"
+              "Original Series" = boastUtils::boastPalette[1],
+              "Seasonal" = boastUtils::boastPalette[5],
+              "Random part" = boastUtils::boastPalette[2],
+              "Trend" = boastUtils::boastPalette[3]
             )
           )
           if (input$seeOriginal == TRUE) {
@@ -545,18 +569,47 @@ server <- function(input, output, session) {
       time = sc[[1]]
       gdp = sc[[2]]
       ts_gdp = ts(gdp, frequency = 4, start = c(1988,1), end = c(2018,1))
-      output$timeseriesplot <- renderPlot(plot.ts(ts_gdp, ylab = "percent change"))
+      #output$timeseriesplot <- renderPlot(plot.ts(ts_gdp, ylab = "percent change"))
       
-      if (input$decompose == "TRUE"){
-        
-        gdp2 = decompose(ts_gdp, filter = c(1/8, 1/4, 1/4, 1/4, 1/8))
-        # output$decomposeplot <-renderPlot(plot(gdp2))
-        output$timeseriesplot <-renderPlot(plot(gdp2))
-      }
+      gdp_dec <- fortify(stats::decompose(ts_gdp))
+      gdp_dec$ranless <- gdp_dec$Data - gdp_dec$remainder
       
-      else if (input$decompose == "FALSE"){
-        output$decomposeplot = NULL
-      }
+      output$timeseriesplot <- renderPlot({
+        if (input$exampletype == "Orginal Series") {
+          plot.ts(ts_gdp, ylab = "Price($)")
+        }
+        else {
+          gdp_plot <- ggplot(gdp_dec, aes(Index)) +
+            geom_line(aes(y = remainder, color = "Random part"), size = 1) +
+            labs(title = "Time Series Decomposition of State College Weather",
+                 x = "Time", y = "Temperature") +
+            scale_color_manual(
+              name = "Components",
+              values = c(
+                "Original Series" = boastUtils::boastPalette[1],
+                "Seasonal" = boastUtils::boastPalette[5],
+                "Random part" = boastUtils::boastPalette[2],
+                "Trend" = boastUtils::boastPalette[3]
+              )
+            )
+          if (input$seeOriginal == TRUE) {
+            gdp_plot <- gdp_plot + geom_line(data = gdp_dec, 
+                                           aes(y = ranless, color = "Original Series"), 
+                                           size = 1) 
+          }
+          if (input$seeTrend == TRUE) {
+            gdp_plot <- gdp_plot + geom_line(data = gdp_dec, 
+                                           aes(y = trend, colour = "Trend"), 
+                                           size = 1)
+          }
+          if (input$seeSeasonal == TRUE) {
+            gdp_plot <- gdp_plot + geom_line(data = gdp_dec, 
+                                           aes(y = seasonal, colour = "Seasonal"), 
+                                           size = 1)
+          }
+          gdp_plot
+        }
+      })
     }
   })
   ### Data Description for Explore Plots ----
