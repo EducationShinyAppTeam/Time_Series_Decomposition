@@ -157,7 +157,7 @@ ui <- list(
                   is plotted as a separate line."),
                 )
               ),
-              style = "text-align: center",
+              # style = "text-align: center",
               bsButton(
                 "nextpart", 
                 "NEXT", 
@@ -392,10 +392,10 @@ server <- function(input, output, session) {
             scale_color_manual(
               name = "Components",
               values = c(
-                "Original Series" = boastUtils::boastPalette[1],
-                "Seasonal" = boastUtils::boastPalette[5],
-                "Random part" = boastUtils::boastPalette[2],
-                "Trend" = boastUtils::boastPalette[3]
+                "Original Series" = boastUtils::psuPalette[3],
+                "Seasonal" = boastUtils::psuPalette[7],
+                "Random part" = boastUtils::psuPalette[5],
+                "Trend" = boastUtils::psuPalette[4]
               )
             )
           if (input$seeOriginal == TRUE) {
