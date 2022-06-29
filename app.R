@@ -397,6 +397,9 @@ server <- function(input, output, session) {
                 "Random part" = boastUtils::psuPalette[5],
                 "Trend" = boastUtils::psuPalette[4]
               )
+            ) +
+            theme(
+              text = element_text(size = 16)
             )
           if (input$seeOriginal == TRUE) {
             ford_plot <- ford_plot + geom_line(data = ford3, 
@@ -441,12 +444,15 @@ server <- function(input, output, session) {
           scale_color_manual(
             name = "Components",
             values = c(
-              "Original Series" = boastUtils::boastPalette[1],
-              "Seasonal" = boastUtils::boastPalette[5],
-              "Random part" = boastUtils::boastPalette[2],
-              "Trend" = boastUtils::boastPalette[3]
+              "Original Series" = boastUtils::psuPalette[3],
+              "Seasonal" = boastUtils::psuPalette[7],
+              "Random part" = boastUtils::psuPalette[5],
+              "Trend" = boastUtils::psuPalette[4]
             )
-          )
+          )+
+            theme(
+              text = element_text(size = 16)
+            )
           if (input$seeOriginal == TRUE) {
             unr_plot <- unr_plot + geom_line(data = unr_dec, 
                                                aes(y = ranless, color = "Original Series"), 
@@ -489,11 +495,14 @@ server <- function(input, output, session) {
             scale_color_manual(
               name = "Components",
               values = c(
-                "Original Series" = boastUtils::boastPalette[1],
-                "Seasonal" = boastUtils::boastPalette[5],
-                "Random part" = boastUtils::boastPalette[2],
-                "Trend" = boastUtils::boastPalette[3]
+                "Original Series" = boastUtils::psuPalette[3],
+                "Seasonal" = boastUtils::psuPalette[7],
+                "Random part" = boastUtils::psuPalette[5],
+                "Trend" = boastUtils::psuPalette[4]
               )
+            ) +
+            theme(
+              text = element_text(size = 16)
             )
           if (input$seeOriginal == TRUE) {
             sp_plot <- sp_plot + geom_line(data = sp_dec, 
@@ -538,12 +547,15 @@ server <- function(input, output, session) {
           scale_color_manual(
             name = "Components",
             values = c(
-              "Original Series" = boastUtils::boastPalette[1],
-              "Seasonal" = boastUtils::boastPalette[5],
-              "Random part" = boastUtils::boastPalette[2],
-              "Trend" = boastUtils::boastPalette[3]
+              "Original Series" = boastUtils::psuPalette[3],
+              "Seasonal" = boastUtils::psuPalette[7],
+              "Random part" = boastUtils::psuPalette[5],
+              "Trend" = boastUtils::psuPalette[4]
             )
-          )
+          ) +
+            theme(
+              text = element_text(size = 16)
+            )
           if (input$seeOriginal == TRUE) {
             sc_plot <- sc_plot + geom_line(data = sc_dec, 
                                                aes(y = ranless, color = "Original Series"), 
@@ -586,11 +598,14 @@ server <- function(input, output, session) {
             scale_color_manual(
               name = "Components",
               values = c(
-                "Original Series" = boastUtils::boastPalette[1],
-                "Seasonal" = boastUtils::boastPalette[5],
-                "Random part" = boastUtils::boastPalette[2],
-                "Trend" = boastUtils::boastPalette[3]
+                "Original Series" = boastUtils::psuPalette[3],
+                "Seasonal" = boastUtils::psuPalette[7],
+                "Random part" = boastUtils::psuPalette[5],
+                "Trend" = boastUtils::psuPalette[4]
               )
+            )+
+            theme(
+              text = element_text(size = 16)
             )
           if (input$seeOriginal == TRUE) {
             gdp_plot <- gdp_plot + geom_line(data = gdp_dec, 
