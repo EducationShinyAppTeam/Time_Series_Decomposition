@@ -361,8 +361,8 @@ ui <- list(
       )
     )
   )
-  
 )
+
 # Server implimentation ----
 server <- function(input, output, session) {
   ## Start button ----
