@@ -31,7 +31,7 @@ ui <- list(
     dashboardSidebar(
       width = 250,
       sidebarMenu(
-        id = "tabs",
+        id = "pages",
         menuItem("Overview", tabName = "intro", icon = icon("tachometer-alt")),
         menuItem("Prerequisities", tabName = "prerequisites", icon = icon("book")),
         menuItem("Examples", tabName = "plots", icon = icon("book")),
@@ -247,7 +247,6 @@ ui <- list(
         ### Challenge ----
         tabItem(
           tabName = "challenge",
-          # verbatimTextOutput("question1"),
           h2("Challenge"),
           p("Test your understanding by trying out these questions"),
           wellPanel(
@@ -367,7 +366,7 @@ ui <- list(
 server <- function(input, output, session) {
   ## Start button ----
   observeEvent(input$start, {
-    updateTabItems(session, "tabs", "plots")
+    updateTabItems(session, "pages", "plots")
   })
   ## Example plots ----
   observe({
@@ -647,7 +646,7 @@ server <- function(input, output, session) {
   )
   
   observeEvent(input$nextpart, {
-    updateTabItems(session, "tabs", "modify")
+    updateTabItems(session, "pages", "modify")
   })
   
   observeEvent(
@@ -796,7 +795,7 @@ server <- function(input, output, session) {
     })
   
   observeEvent(input$next2, {
-    updateTabItems(session, "tabs", "challenge")
+    updateTabItems(session, "pages", "challenge")
   })
   
   
