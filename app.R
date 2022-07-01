@@ -22,8 +22,12 @@ ui <- list(
       tags$li(class = "dropdown", actionLink("info", icon("info"))),
       tags$li(
         class = "dropdown",
+        boastUtils::surveyLink(name = "Time Series Decomposition")
+      ),
+      tags$li(
+        class = "dropdown",
         tags$a(href = 'https://shinyapps.science.psu.edu/',
-               icon("home")
+          icon("home")
         )
       )
     ),
