@@ -101,14 +101,22 @@ ui <- list(
         tabItem(
           tabName = "prerequisites",
           h2("Prerequisites"),
-          box(
-            title = "What is time series decomposition?",
-            status = "primary",
-            collapsible = TRUE,
-            collapsed = TRUE,
-            width = '100%',
-            "Time Series Decomposition deconstructs a time series dataset into 
-            different componenets to explore underlying patterns of the dataset"
+          # box(
+          #   title = "What is time series decomposition?",
+          #   status = "primary",
+          #   collapsible = TRUE,
+          #   collapsed = TRUE,
+          #   width = '100%',
+          #   "Time Series Decomposition deconstructs a time series dataset into 
+          #   different componenets to explore underlying patterns of the dataset"
+          # )
+          p("The app will focus on the components of a time series decomposition.
+            Time Series Decomposition deconstructs a time series dataset into 
+            different componenets to explore underlying patterns of the dataset."),
+          p("The components that a time sereis decomposition has are:",
+            tags$li("Trend"),
+            tags$li("Seasonality"),
+            tags$li("Random part")
           )
         ),
         ### Plots ----
@@ -137,29 +145,44 @@ ui <- list(
                     "Orginal Series", "Decompose"),
                   selected = "Original Series"
                 ),
-                conditionalPanel(
-                  condition = "input.exampletype == 'Decompose'",
-                  fluidRow(
-                    checkboxInput(
-                      inputId = "seeOriginal",
-                      label = "Original Series",
-                      value = FALSE
-                    ),
-                    checkboxInput(
-                      inputId = "seeTrend",
-                      label = "Trend",
-                      value = FALSE
-                    ),
-                    checkboxInput(
-                      inputId = "seeSeasonal",
-                      label = "Seasonal",
-                      value = FALSE
-                    )
-                  ),
-                  p("Note: the original series line in the decomposition plot
-                  does not contain the random part. Instead the random part 
-                  is plotted as a separate line."),
+                checkboxInput(
+                  inputId = "seeOriginal",
+                  label = "Original Series",
+                  value = TRUE
+                ),
+                checkboxInput(
+                  inputId = "seeTrend",
+                  label = "Trend",
+                  value = FALSE
+                ),
+                checkboxInput(
+                  inputId = "seeSeasonal",
+                  label = "Seasonal",
+                  value = FALSE
                 )
+                # conditionalPanel(
+                #   condition = "input.exampletype == 'Decompose'",
+                #   fluidRow(
+                #     checkboxInput(
+                #       inputId = "seeOriginal",
+                #       label = "Original Series",
+                #       value = TRUE
+                #     ),
+                #     checkboxInput(
+                #       inputId = "seeTrend",
+                #       label = "Trend",
+                #       value = FALSE
+                #     ),
+                #     checkboxInput(
+                #       inputId = "seeSeasonal",
+                #       label = "Seasonal",
+                #       value = FALSE
+                #     )
+                #   ),
+                #   p("Note: the original series line in the decomposition plot
+                #   does not contain the random part. Instead the random part 
+                #   is plotted as a separate line."),
+                # )
               ),
               # style = "text-align: center",
               bsButton(
@@ -382,14 +405,19 @@ server <- function(input, output, session) {
       ts_ford = ts(price, frequency = 12, start = c(1988,7), end = c(2018,6))
       ford3 <- fortify(stats::decompose(ts_ford))
       ford3$ranless <- ford3$Data - ford3$remainder
+      ford3$trend_residue <- ford3$Data - ford3$trend
+      ford3$se_residue <- ford3$Data - ford3$seasonal
       
       output$timeseriesplot <- renderPlot({
-        if (input$exampletype == "Orginal Series") {
-          plot.ts(ts_ford, ylab = "price")
-        }
-        else {
+        # if (input$exampletype == "Orginal Series") {
+        #   plot.ts(ts_ford, ylab = "price")
+        # }
+        # else {
           ford_plot <- ggplot(ford3, aes(Index)) +
-            geom_line(aes(y = remainder, color = "Random part"), size = 1) +
+            #geom_line(aes(y = remainder, color = "Random part"), size = 1) +
+            # geom_line(data = ford3, 
+            #           aes(y = ranless, color = "Original Series"), 
+            #           size = 1) +
             labs(title = "Time Series Decomposition of Ford Stock Price",
                  x = "Time", y = "Price ($)") +
             scale_color_manual(
@@ -397,30 +425,35 @@ server <- function(input, output, session) {
               values = c(
                 "Original Series" = boastUtils::psuPalette[3],
                 "Seasonal" = boastUtils::psuPalette[7],
-                "Random part" = boastUtils::psuPalette[5],
-                "Trend" = boastUtils::psuPalette[4]
+                "Trend Residue" = boastUtils::boastPalette[2],
+                "Seasonal Residue" = boastUtils::boastPalette[8],
+                "Trend" = boastUtils::psuPalette[8]
               )
             ) +
             theme(
               text = element_text(size = 16)
             )
           if (input$seeOriginal == TRUE) {
-            ford_plot <- ford_plot + geom_line(data = ford3, 
-                                               aes(y = ranless, color = "Original Series"), 
-                                               size = 1) 
+            ford_plot <- ford_plot + geom_line(data = ford3,
+                                               aes(y = ranless, color = "Original Series"),
+                                               size = 1)
           }
           if (input$seeTrend == TRUE) {
             ford_plot <- ford_plot + geom_line(data = ford3, 
                                                aes(y = trend, colour = "Trend"), 
-                                               size = 1)
+                                               size = 1) +
+              geom_line(data= ford3, 
+                aes(y=trend_residue, colour = "Trend Residue"), size = 1)
           }
           if (input$seeSeasonal == TRUE) {
             ford_plot <- ford_plot + geom_line(data = ford3, 
                                                aes(y = seasonal, color = "Seasonal"), 
-                                               size = 1)
+                                               size = 1) +
+              geom_line(data= ford3, 
+                        aes(y=se_residue, colour = "Seasonal Residue"), size = 1)
           }
           ford_plot
-        }
+        # }
       })
         
     }
