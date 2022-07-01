@@ -138,13 +138,13 @@ ui <- list(
                   selected = "Ford Stock Price"
                 ),
                 br(),
-                selectInput(
-                  inputId = "exampletype",
-                  label = "Exploration type",
-                  choices = c(
-                    "Orginal Series", "Decompose"),
-                  selected = "Original Series"
-                ),
+                # selectInput(
+                #   inputId = "exampletype",
+                #   label = "Exploration type",
+                #   choices = c(
+                #     "Orginal Series", "Decompose"),
+                #   selected = "Original Series"
+                # ),
                 checkboxInput(
                   inputId = "seeOriginal",
                   label = "Original Series",
@@ -409,15 +409,7 @@ server <- function(input, output, session) {
       ford3$se_residue <- ford3$Data - ford3$seasonal
       
       output$timeseriesplot <- renderPlot({
-        # if (input$exampletype == "Orginal Series") {
-        #   plot.ts(ts_ford, ylab = "price")
-        # }
-        # else {
           ford_plot <- ggplot(ford3, aes(Index)) +
-            #geom_line(aes(y = remainder, color = "Random part"), size = 1) +
-            # geom_line(data = ford3, 
-            #           aes(y = ranless, color = "Original Series"), 
-            #           size = 1) +
             labs(title = "Time Series Decomposition of Ford Stock Price",
                  x = "Time", y = "Price ($)") +
             scale_color_manual(
@@ -435,7 +427,7 @@ server <- function(input, output, session) {
             )
           if (input$seeOriginal == TRUE) {
             ford_plot <- ford_plot + geom_line(data = ford3,
-                                               aes(y = ranless, color = "Original Series"),
+                                               aes(y = Data, color = "Original Series"),
                                                size = 1)
           }
           if (input$seeTrend == TRUE) {
@@ -466,14 +458,11 @@ server <- function(input, output, session) {
       ts_bh = ts(ur, frequency = 12, start = c(1948,1), end = c(2021,6))
       unr_dec <- fortify(stats::decompose(ts_bh))
       unr_dec$ranless <- unr_dec$Data - unr_dec$remainder
+      unr_dec$trend_residue <- unr_dec$Data - unr_dec$trend
+      unr_dec$se_residue <- unr_dec$Data - unr_dec$seasonal
       
       output$timeseriesplot <- renderPlot({
-        if (input$exampletype == "Orginal Series") {
-          plot.ts(ts_bh, ylab = "Unemployment Rate")
-        }
-        else {
           unr_plot <- ggplot(unr_dec, aes(Index)) +
-            geom_line(aes(y = remainder, color = "Random part"), size = 1) +
             labs(title = "Time Series Decomposition of the Unemployment Rate 
                  in the US",
                  x = "Time", y = "Price ($)") +
@@ -482,8 +471,9 @@ server <- function(input, output, session) {
             values = c(
               "Original Series" = boastUtils::psuPalette[3],
               "Seasonal" = boastUtils::psuPalette[7],
-              "Random part" = boastUtils::psuPalette[5],
-              "Trend" = boastUtils::psuPalette[4]
+              "Trend Residue" = boastUtils::boastPalette[2],
+              "Seasonal Residue" = boastUtils::boastPalette[8],
+              "Trend" = boastUtils::psuPalette[8]
             )
           )+
             theme(
@@ -491,21 +481,25 @@ server <- function(input, output, session) {
             )
           if (input$seeOriginal == TRUE) {
             unr_plot <- unr_plot + geom_line(data = unr_dec, 
-                                               aes(y = ranless, color = "Original Series"), 
+                                               aes(y = Data, color = "Original Series"), 
                                                size = 1) 
           }
           if (input$seeTrend == TRUE) {
             unr_plot <- unr_plot + geom_line(data = unr_dec, 
                                                aes(y = trend, colour = "Trend"), 
-                                               size = 1)
+                                               size = 1) +
+              geom_line(data= unr_dec, 
+                        aes(y=trend_residue, colour = "Trend Residue"), size = 1)
           }
           if (input$seeSeasonal == TRUE) {
             unr_plot <- unr_plot + geom_line(data = unr_dec, 
                                                aes(y = seasonal, color = "Seasonal"), 
-                                               size = 1)
+                                               size = 1) +
+              geom_line(data= unr_dec, 
+                        aes(y=se_residue, colour = "Seasonal Residue"), size = 1)
           }
           unr_plot
-        }
+  
       })
     }
     
@@ -518,14 +512,15 @@ server <- function(input, output, session) {
       
       sp_dec <- fortify(stats::decompose(ts_sp))
       sp_dec$ranless <- sp_dec$Data - sp_dec$remainder
+      sp_dec$trend_residue <- sp_dec$Data - sp_dec$trend
+      sp_dec$se_residue <- sp_dec$Data - sp_dec$seasonal
       
       output$timeseriesplot <- renderPlot({
-        if (input$exampletype == "Orginal Series") {
-          plot.ts(ts_sp, ylab = "Price ($)")
-        }
-        else {
+        # if (input$exampletype == "Orginal Series") {
+        #   plot.ts(ts_sp, ylab = "Price ($)")
+        # }
+        # else {
           sp_plot <- ggplot(sp_dec, aes(Index)) +
-            geom_line(aes(y = remainder, color = "Random part"), size = 1) +
             labs(title = "Price of the Standard and Poor 500 Index price",
                  x = "Time", y = "Price ($)") +
             scale_color_manual(
@@ -533,8 +528,9 @@ server <- function(input, output, session) {
               values = c(
                 "Original Series" = boastUtils::psuPalette[3],
                 "Seasonal" = boastUtils::psuPalette[7],
-                "Random part" = boastUtils::psuPalette[5],
-                "Trend" = boastUtils::psuPalette[4]
+                "Trend Residue" = boastUtils::boastPalette[2],
+                "Seasonal Residue" = boastUtils::boastPalette[8],
+                "Trend" = boastUtils::psuPalette[8]
               )
             ) +
             theme(
@@ -542,21 +538,25 @@ server <- function(input, output, session) {
             )
           if (input$seeOriginal == TRUE) {
             sp_plot <- sp_plot + geom_line(data = sp_dec, 
-                                             aes(y = ranless, color = "Original Series"), 
+                                             aes(y = Data, color = "Original Series"), 
                                              size = 1) 
           }
           if (input$seeTrend == TRUE) {
             sp_plot <- sp_plot + geom_line(data = sp_dec, 
                                              aes(y = trend, colour = "Trend"), 
-                                             size = 1)
+                                             size = 1) +
+              geom_line(data= sp_dec, 
+                        aes(y=trend_residue, colour = "Trend Residue"), size = 1)
           }
           if (input$seeSeasonal == TRUE) {
             sp_plot <- sp_plot + geom_line(data = sp_dec, 
                                              aes(y = seasonal, color = "Seasonal"), 
-                                             size = 1)
+                                             size = 1) +
+              geom_line(data= sp_dec, 
+                        aes(y=se_residue, colour = "Seasonal Residue"), size = 1)
           }
           sp_plot
-        }
+
       })
     }
     
@@ -570,14 +570,16 @@ server <- function(input, output, session) {
       
       sc_dec <- fortify(stats::decompose(ts_sc))
       sc_dec$ranless <- sc_dec$Data - sc_dec$remainder
+      sc_dec$trend_residue <- sc_dec$Data - sc_dec$trend
+      sc_dec$se_residue <- sc_dec$Data - sc_dec$seasonal
       
       output$timeseriesplot <- renderPlot({
-        if (input$exampletype == "Orginal Series") {
-          plot.ts(ts_sc, ylab = "Temperature")
-        }
-        else {
+        # if (input$exampletype == "Orginal Series") {
+        #   plot.ts(ts_sc, ylab = "Temperature")
+        # }
+        # else {
           sc_plot <- ggplot(sc_dec, aes(Index)) +
-            geom_line(aes(y = remainder, color = "Random part"), size = 1) +
+            # geom_line(aes(y = remainder, color = "Random part"), size = 1) +
             labs(title = "Time Series Decomposition of State College Weather",
                  x = "Time", y = "Temperature") +
           scale_color_manual(
@@ -585,8 +587,9 @@ server <- function(input, output, session) {
             values = c(
               "Original Series" = boastUtils::psuPalette[3],
               "Seasonal" = boastUtils::psuPalette[7],
-              "Random part" = boastUtils::psuPalette[5],
-              "Trend" = boastUtils::psuPalette[4]
+              "Trend Residue" = boastUtils::boastPalette[2],
+              "Seasonal Residue" = boastUtils::boastPalette[8],
+              "Trend" = boastUtils::psuPalette[8]
             )
           ) +
             theme(
@@ -594,21 +597,25 @@ server <- function(input, output, session) {
             )
           if (input$seeOriginal == TRUE) {
             sc_plot <- sc_plot + geom_line(data = sc_dec, 
-                                               aes(y = ranless, color = "Original Series"), 
+                                               aes(y = Data, color = "Original Series"), 
                                                size = 1) 
           }
           if (input$seeTrend == TRUE) {
             sc_plot <- sc_plot + geom_line(data = sc_dec, 
                                                aes(y = trend, colour = "Trend"), 
-                                               size = 1)
+                                               size = 1) +
+              geom_line(data= sc_dec, 
+                        aes(y=trend_residue, colour = "Trend Residue"), size = 1)
           }
           if (input$seeSeasonal == TRUE) {
             sc_plot <- sc_plot + geom_line(data = sc_dec, 
                                                aes(y = seasonal, colour = "Seasonal"), 
-                                               size = 1)
+                                               size = 1) +
+              geom_line(data= sc_dec, 
+                        aes(y=se_residue, colour = "Seasonal Residue"), size = 1)
           }
           sc_plot
-        }
+        # }
       })
     }
     
@@ -621,14 +628,13 @@ server <- function(input, output, session) {
       
       gdp_dec <- fortify(stats::decompose(ts_gdp))
       gdp_dec$ranless <- gdp_dec$Data - gdp_dec$remainder
+      gdp_dec$trend_residue <- gdp_dec$Data - gdp_dec$trend
+      gdp_dec$se_residue <- gdp_dec$Data - gdp_dec$seasonal
       
       output$timeseriesplot <- renderPlot({
-        if (input$exampletype == "Orginal Series") {
-          plot.ts(ts_gdp, ylab = "Price($)")
-        }
-        else {
+
           gdp_plot <- ggplot(gdp_dec, aes(Index)) +
-            geom_line(aes(y = remainder, color = "Random part"), size = 1) +
+           # geom_line(aes(y = remainder, color = "Random part"), size = 1) +
             labs(title = "Time Series Decomposition of State College Weather",
                  x = "Time", y = "Temperature") +
             scale_color_manual(
@@ -636,8 +642,9 @@ server <- function(input, output, session) {
               values = c(
                 "Original Series" = boastUtils::psuPalette[3],
                 "Seasonal" = boastUtils::psuPalette[7],
-                "Random part" = boastUtils::psuPalette[5],
-                "Trend" = boastUtils::psuPalette[4]
+                "Trend Residue" = boastUtils::boastPalette[2],
+                "Seasonal Residue" = boastUtils::boastPalette[8],
+                "Trend" = boastUtils::psuPalette[8]
               )
             )+
             theme(
@@ -645,21 +652,25 @@ server <- function(input, output, session) {
             )
           if (input$seeOriginal == TRUE) {
             gdp_plot <- gdp_plot + geom_line(data = gdp_dec, 
-                                           aes(y = ranless, color = "Original Series"), 
+                                           aes(y = Data, color = "Original Series"), 
                                            size = 1) 
           }
           if (input$seeTrend == TRUE) {
             gdp_plot <- gdp_plot + geom_line(data = gdp_dec, 
                                            aes(y = trend, colour = "Trend"), 
-                                           size = 1)
+                                           size = 1) +
+              geom_line(data= gdp_dec, 
+                        aes(y=trend_residue, colour = "Trend Residue"), size = 1)
           }
           if (input$seeSeasonal == TRUE) {
             gdp_plot <- gdp_plot + geom_line(data = gdp_dec, 
                                            aes(y = seasonal, colour = "Seasonal"), 
-                                           size = 1)
+                                           size = 1) +
+              geom_line(data= gdp_dec, 
+                        aes(y=se_residue, colour = "Seasonal Residue"), size = 1)
           }
           gdp_plot
-        }
+       
       })
     }
   })
@@ -672,10 +683,14 @@ server <- function(input, output, session) {
         EXPR = input$dataset,
         "Ford Stock Price" = "The data set records the stock price of 
         Ford Motor Company from 1987 to 2017", 
-        "Berkshire Hathaway Stock Price"  = "Insert Context here A", 
-        "S&P 500"  = "Insert Context here B", 
-        "State College Weather"  = "Insert Context here C", 
-        "GDP growth rate of U.S."  = "Insert Context here D"
+        "Unemployment Rate"  = "The dataset displays the unemployment rate in
+        the US from 1948 to 2021", 
+        "S&P 500"  = "The data set records the price of 
+        Standard and Poor 500 index from 1988 to 2018", 
+        "State College Weather"  = "The dataset displays the temperature in
+        State College from 1988 to 2017", 
+        "GDP growth rate of U.S."  = "The dataset displays the GDP growth rate in
+        the US from 1988 to 2018"
       )
       
       output$dataDesc<- renderUI(datasetDesc)
