@@ -387,14 +387,14 @@ server <- function(input, output, session) {
           if (input$seeOriginal == TRUE) {
             ford_plot <- ford_plot + geom_line(data = ford3,
                                                aes(y = Data, color = "Original Series"),
-                                               size = 1)
+                                               size = 1) 
           }
           if (input$seeTrend == TRUE) {
             ford_plot <- ford_plot + geom_line(data = ford3, 
                                                aes(y = trend, colour = "Trend"), 
                                                size = 1) +
               geom_line(data= ford3, 
-                aes(y=trend_residue, colour = "Trend Residue"), size = 1)
+                aes(y=trend_residue, colour = "Trend Residue"), size = 1) 
           }
           if (input$seeSeasonal == TRUE) {
             ford_plot <- ford_plot + geom_line(data = ford3, 
