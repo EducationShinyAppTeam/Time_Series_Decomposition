@@ -101,15 +101,6 @@ ui <- list(
         tabItem(
           tabName = "prerequisites",
           h2("Prerequisites"),
-          # box(
-          #   title = "What is time series decomposition?",
-          #   status = "primary",
-          #   collapsible = TRUE,
-          #   collapsed = TRUE,
-          #   width = '100%',
-          #   "Time Series Decomposition deconstructs a time series dataset into 
-          #   different componenets to explore underlying patterns of the dataset"
-          # )
           p("The app will focus on the components of a time series decomposition.
             Time Series Decomposition deconstructs a time series dataset into 
             different componenets to explore underlying patterns of the dataset."),
@@ -138,13 +129,6 @@ ui <- list(
                   selected = "Ford Stock Price"
                 ),
                 br(),
-                # selectInput(
-                #   inputId = "exampletype",
-                #   label = "Exploration type",
-                #   choices = c(
-                #     "Orginal Series", "Decompose"),
-                #   selected = "Original Series"
-                # ),
                 checkboxInput(
                   inputId = "seeOriginal",
                   label = "Original Series",
@@ -160,31 +144,7 @@ ui <- list(
                   label = "Seasonal",
                   value = FALSE
                 )
-                # conditionalPanel(
-                #   condition = "input.exampletype == 'Decompose'",
-                #   fluidRow(
-                #     checkboxInput(
-                #       inputId = "seeOriginal",
-                #       label = "Original Series",
-                #       value = TRUE
-                #     ),
-                #     checkboxInput(
-                #       inputId = "seeTrend",
-                #       label = "Trend",
-                #       value = FALSE
-                #     ),
-                #     checkboxInput(
-                #       inputId = "seeSeasonal",
-                #       label = "Seasonal",
-                #       value = FALSE
-                #     )
-                #   ),
-                #   p("Note: the original series line in the decomposition plot
-                #   does not contain the random part. Instead the random part 
-                #   is plotted as a separate line."),
-                # )
               ),
-              # style = "text-align: center",
               bsButton(
                 "nextpart", 
                 "NEXT", 
@@ -197,8 +157,7 @@ ui <- list(
                 width =7,
                 uiOutput(outputId = "dataDesc"),
                 plotOutput(
-                  "timeseriesplot", 
-                  # height = 500
+                  "timeseriesplot",
                 ),
               )
             ),
