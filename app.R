@@ -366,9 +366,12 @@ server <- function(input, output, session) {
       ford3$ranless <- ford3$Data - ford3$remainder
       ford3$trend_residue <- ford3$Data - ford3$trend
       ford3$se_residue <- ford3$Data - ford3$seasonal
+      ford3$comb <- ford3$trend + ford3$seasonal
       
       output$timeseriesplot <- renderPlot({
           ford_plot <- ggplot(ford3, aes(Index)) +
+            geom_line(data = ford3, 
+                      aes(y = Data, color = "Original Series"),size = 1) +
             labs(title = "Time Series Decomposition of Ford Stock Price",
                  x = "Time", y = "Price ($)") +
             scale_color_manual(
@@ -376,7 +379,7 @@ server <- function(input, output, session) {
               values = c(
                 "Original Series" = boastUtils::psuPalette[3],
                 "Seasonal" = boastUtils::psuPalette[7],
-                "Trend Residue" = boastUtils::boastPalette[2],
+                "Residue" = boastUtils::boastPalette[2],
                 "Seasonal Residue" = boastUtils::boastPalette[8],
                 "Trend" = boastUtils::psuPalette[8]
               )
@@ -384,25 +387,48 @@ server <- function(input, output, session) {
             theme(
               text = element_text(size = 16)
             )
-          if (input$seeOriginal == TRUE) {
-            ford_plot <- ford_plot + geom_line(data = ford3,
-                                               aes(y = Data, color = "Original Series"),
-                                               size = 1) 
-          }
-          if (input$seeTrend == TRUE) {
+          if (input$seeTrend == TRUE && input$seeSeasonal == FALSE) {
             ford_plot <- ford_plot + geom_line(data = ford3, 
                                                aes(y = trend, colour = "Trend"), 
                                                size = 1) +
               geom_line(data= ford3, 
-                aes(y=trend_residue, colour = "Trend Residue"), size = 1) 
+                        aes(y=trend_residue, colour = "Residue"), size = 1) 
           }
-          if (input$seeSeasonal == TRUE) {
+          else if (input$seeSeasonal == TRUE && input$seeTrend == FALSE) {
+            ford_plot <- ford_plot + geom_line(
+                                        data = ford3, 
+                                        aes(y = seasonal, color = "Seasonal"), 
+                                        size = 1) +
+              geom_line(data= ford3, 
+                        aes(y=se_residue, colour = "Residue"), size = 1)
+          }
+          
+          else if (input$seeTrend == TRUE && input$seeSeasonal == TRUE) {
             ford_plot <- ford_plot + geom_line(data = ford3, 
-                                               aes(y = seasonal, color = "Seasonal"), 
+                                               aes(y = comb, color = "Seasonal"), 
                                                size = 1) +
               geom_line(data= ford3, 
-                        aes(y=se_residue, colour = "Seasonal Residue"), size = 1)
+                        aes(y=remainder, colour = "Residue"), size = 1)
           }
+          # if (input$seeOriginal == TRUE) {
+          #   ford_plot <- ford_plot + geom_line(data = ford3,
+          #                                      aes(y = Data, color = "Original Series"),
+          #                                      size = 1) 
+          # }
+          # if (input$seeTrend == TRUE) {
+          #   ford_plot <- ford_plot + geom_line(data = ford3, 
+          #                                      aes(y = trend, colour = "Trend"), 
+          #                                      size = 1) +
+          #     geom_line(data= ford3, 
+          #       aes(y=trend_residue, colour = "Trend Residue"), size = 1) 
+          # }
+          # if (input$seeSeasonal == TRUE) {
+          #   ford_plot <- ford_plot + geom_line(data = ford3, 
+          #                                      aes(y = seasonal, color = "Seasonal"), 
+          #                                      size = 1) +
+          #     geom_line(data= ford3, 
+          #               aes(y=se_residue, colour = "Seasonal Residue"), size = 1)
+          # }
           ford_plot
         # }
       })
