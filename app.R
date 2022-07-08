@@ -10,7 +10,6 @@ library(ggplot2)
 
 # Define UI for App ----
 
-
 # UI ----
 ui <- list(
   dashboardPage(
@@ -127,12 +126,6 @@ ui <- list(
                               "S&P 500", "State College Weather", 
                               "GDP growth rate of U.S." ),
                   selected = "Ford Stock Price"
-                ),
-                br(),
-                checkboxInput(
-                  inputId = "seeOriginal",
-                  label = "Original Series",
-                  value = TRUE
                 ),
                 checkboxInput(
                   inputId = "seeTrend",
