@@ -336,6 +336,7 @@ server <- function(input, output, session) {
   observeEvent(input$start, {
     updateTabItems(session, "pages", "plots")
   })
+  
   ## Example plots ----
   observe({
     ### Ford plot ----
@@ -622,6 +623,25 @@ server <- function(input, output, session) {
       })
     }
   })
+  ### Reset of the model line checkboxes ----
+  observeEvent(
+    eventExpr = input$dataset, 
+    handlerExpr = {
+      updateCheckboxInput(
+        session = session,
+        inputId = "seeTrend",
+        value = FALSE
+      )
+      
+      updateCheckboxInput(
+        session = session,
+        inputId = "seeSeasonal",
+        value = FALSE
+      )
+    }
+    
+  )
+  
   ### Data Description for Explore Plots ----
   
   observeEvent(
