@@ -338,6 +338,24 @@ server <- function(input, output, session) {
   })
   
   ## Example plots ----
+  ### Reset of the model line checkboxes 
+  observeEvent(
+    eventExpr = input$dataset, 
+    handlerExpr = {
+      updateCheckboxInput(
+        session = session,
+        inputId = "seeTrend",
+        value = FALSE
+      )
+      
+      updateCheckboxInput(
+        session = session,
+        inputId = "seeSeasonal",
+        value = FALSE
+      )
+    }
+    
+  )
   observe({
     ### Ford plot ----
     if (input$dataset == "Ford Stock Price"){
@@ -393,7 +411,6 @@ server <- function(input, output, session) {
           }
           ford_plot
       })
-        
     }
     
     ### Unemployment ----
@@ -623,24 +640,6 @@ server <- function(input, output, session) {
       })
     }
   })
-  ### Reset of the model line checkboxes ----
-  observeEvent(
-    eventExpr = input$dataset, 
-    handlerExpr = {
-      updateCheckboxInput(
-        session = session,
-        inputId = "seeTrend",
-        value = FALSE
-      )
-      
-      updateCheckboxInput(
-        session = session,
-        inputId = "seeSeasonal",
-        value = FALSE
-      )
-    }
-    
-  )
   
   ### Data Description for Explore Plots ----
   
