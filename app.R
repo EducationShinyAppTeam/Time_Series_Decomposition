@@ -7,6 +7,7 @@ library(shinyWidgets)
 library(boastUtils)
 library(ggfortify)
 library(ggplot2)
+library(zoo)
 
 # Define UI for App ----
 
@@ -93,7 +94,7 @@ ui <- list(
             br(),
             citeApp(),
             br(),br(),
-            div(class = "updated",  "Last Update: 06/13/2022 by NJH.")
+            div(class = "updated",  "Last Update: 11/17/2022 by SMV.")
           )
         ),
         ### Prerequisities ----
@@ -103,11 +104,14 @@ ui <- list(
           p("The app will focus on the components of a time series decomposition.
             Time Series Decomposition deconstructs a time series dataset into 
             different componenets to explore underlying patterns of the dataset."),
-          p("The components that a time sereis decomposition has are:",
+          p("The components that a time sereis decomposition has are:"),
+          tags$ol(
             tags$li("Trend"),
             tags$li("Seasonality"),
             tags$li("Random part")
           )
+            
+          
         ),
         ### Plots ----
         tabItem(
