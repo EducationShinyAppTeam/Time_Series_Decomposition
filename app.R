@@ -22,12 +22,12 @@ ui <- list(
       tags$li(class = "dropdown", actionLink("info", icon("info"))),
       tags$li(
         class = "dropdown",
-        boastUtils::surveyLink(name = "Time Series Decomposition")
+        boastUtils::surveyLink(name = "Time_Series_Decomposition")
       ),
       tags$li(
         class = "dropdown",
         tags$a(href = 'https://shinyapps.science.psu.edu/',
-          icon("home")
+               icon("home")
         )
       )
     ),
@@ -38,8 +38,8 @@ ui <- list(
         id = "pages",
         menuItem("Overview", tabName = "intro", icon = icon("tachometer-alt")),
         menuItem("Prerequisities", tabName = "prerequisites", icon = icon("book")),
-        menuItem("Examples", tabName = "plots", icon = icon("book")),
-        menuItem("Explore", tabName = "modify", icon = icon("wpexplorer")),
+        menuItem("Explore", tabName = "plots", icon = icon("wpexplorer")),
+        menuItem("Simulation", tabName = "modify", icon = icon("wpexplorer")),
         menuItem("Challenge", tabName = "challenge", icon = icon("cogs")),
         menuItem("References", tabName = "references", icon = icon("leanpub"))
       ),
@@ -57,22 +57,18 @@ ui <- list(
           withMathJax(),
           h1("Time Series Decomposition"),
           br(),
-          p("This application is to help you better understand 
-             seasonality, long term trend and random components of time 
-             series plot."),
+          p("This application is to help you better understand long term trend, 
+            seasonality,  and random components of time series plot."),
           h2("Instructions"),
           tags$ol(
-            tags$li("You can explore time series plots for several different 
-                    datasets from real life."),
-            tags$li("Check the 'decompose' box to look at seasonality, long 
-                    term trend as well as random components separately."),
-            tags$li("You can look at the information of each dataset by 
-                    checking 'information' box."),
-            tags$li("Then you can hit 'NEXT' to go to the simulate plots part."),
-            tags$li("You can modify trend, seasonality and random components 
-                    and see how the time series plot changes."),
-            tags$li("Then you can hit 'NEXT' to go to the challenge part."),
-            tags$li("In the challenge part, try to match the decompositions to 
+            tags$li("You can explore time series plots for several different datasets 
+                    from real life."),
+            tags$li("Check the 'Trend' or 'Seasonal' box to look at those components 
+                    of the series."),
+            tags$li("In the Simulation section, you can modify trend, seasonality 
+                    and random components and see how the simulated  time series 
+                    plot changes."),
+            tags$li("In the Challenge section, try to match the decompositions to 
                     the observed time series plot."),
             tags$li("Play with it and have fun!")
           ),
@@ -88,35 +84,53 @@ ui <- list(
           ),
           br(),br(),
           h2("Acknowledgements"),
-          p("This app was developed and coded by Jiajun Gao.",
+          p("This app was developed and coded by Jiajun Gao and updated in 2023 
+            by Luqi Jiao Emanuele.",
             br(),br(),
             "Cite this app as:",
             br(),
             citeApp(),
             br(),br(),
-            div(class = "updated",  "Last Update: 11/17/2022 by SMV.")
+            div(class = "updated",  "Last Update: 06/23/2023 by LJE.")
           )
         ),
         ### Prerequisities ----
         tabItem(
           tabName = "prerequisites",
-          h2("Prerequisites"),
-          p("The app will focus on the components of a time series decomposition.
-            Time Series Decomposition deconstructs a time series dataset into 
-            different componenets to explore underlying patterns of the dataset."),
-          p("The components that a time sereis decomposition has are:"),
+          h2("Time Series"),
+          p("A time series refers to a sequence of data points or observations 
+            collected and recorded over time, typically at regular intervals. It 
+            is a fundamental concept in data analysis, where the focus is on studying 
+            the patterns, trends, and behavior of data with respect to time."),
+          p("Common Examples are:"),
+          tags$ul(
+            tags$li("Stock prices"),
+            tags$li("Weather measurements"),
+            tags$li("Economic indicators"),
+            tags$li("Population statistics"),
+            tags$li("Sensor readings")
+          ),
+          h3("Decomposition"),
+          p("The app will focus on a time series decomposition that deconstructs 
+            the series into the following components:"),
           tags$ol(
-            tags$li("Trend"),
-            tags$li("Seasonality"),
-            tags$li("Random part")
+            tags$li("Trend: represents the long-term movement or direction of the 
+                    time series."),
+            tags$li("Seasonality: capturing periodic patterns that repeat at fixed 
+                    intervals within the time series."),
+            tags$li("Random components: representing the random or irregular fluctuations 
+                    in the time series that cannot be attributed to the trend, 
+                    seasonality, or other explanatory trends.")
           )
-            
           
         ),
-        ### Plots ----
+        ### Explore ----
         tabItem(
           tabName = "plots",
           h2("Explore"),
+          br(),
+          p("There are five different datasets for you to explore the trend and 
+            seasonality."),
           br(),
           fluidRow(
             column(
@@ -127,8 +141,8 @@ ui <- list(
                   label="Dataset",
                   choices = c(
                     "Ford Stock Price", "Unemployment Rate", 
-                              "S&P 500", "State College Weather", 
-                              "GDP growth rate of U.S." ),
+                    "S&P 500", "State College Weather", 
+                    "GDP growth rate of U.S." ),
                   selected = "Ford Stock Price"
                 ),
                 checkboxInput(
@@ -151,24 +165,26 @@ ui <- list(
             ),
             fluidRow(
               column(
-                width =7,
+                width = 7,
                 uiOutput(outputId = "dataDesc"),
-                plotOutput(
-                  "timeseriesplot",
-                ),
+                br(),
+                plotOutput("timeseriesplot"
+                )
               )
             ),
             bsPopover("nextpart", " ", 
                       "Go to simulate plots.", 
-                      place = "right", trigger = "hover"),
+                      place = "right", trigger = "hover")
           )
         ),
-        ### Simulate Plots ----
+        ### Simulation ----
         tabItem(
           tabName = "modify",
-          h2("Explore Time Series Decomposition"),
+          h2("Simulate Time Series Decomposition"),
+          br(),
           h6("Use the toggle inputs to simulate time series plots with different
             inputs"),
+          br(),
           fluidRow(
             column(
               width = 4,
@@ -194,19 +210,20 @@ ui <- list(
                   choices = c("single process", "multiple processes"),
                   selected = "single process"
                 ),
+                ####add a conditonal slide
                 conditionalPanel(
-                  condition = "input.simulation == 'single process'",
+                  condition = "input.simulation == 'multiple processes'",
+                  sliderInput("path", "# of paths", min = 1, max = 3, value = 1)
+                ),
+                conditionalPanel(
+                  condition = "input.simulation",
                   style = "text-align: center" , 
                   bsButton(
                     "newpro", 
                     "New Process", 
-                    size = "middle", 
+                    size = "middle"
                   )
-                ),
-                ####add a conditonal slide
-                conditionalPanel(
-                  condition = "input.simulation == 'multiple processes'",
-                  sliderInput("path", "# of paths", min = 1, max = 3, value = 1))
+                )
               )
             ),
             column(
@@ -231,34 +248,42 @@ ui <- list(
         tabItem(
           tabName = "challenge",
           h2("Challenge"),
-          p("Test your understanding by trying out these questions"),
-          wellPanel(
+          p("Test your understanding by trying out these questions."),
+          br(),
             fluidRow(
               column(
-                width = 5,
+                width = 6,
                 imageOutput(
                   "questiongraph", 
-                  height = 280
-                ),
+                  height = 250)
               ),
               column(
-                width = 5, 
-                offset = 1,
+                width = 5,
+                wellPanel(
                 uiOutput(outputId = "questionDisplayed"),
-                br(),br(),
-                actionButton("newchallenge","New Challenge"),
-                br(),br(),br(),
+                br(),
+                actionButton(
+                  inputId = "newchallenge",
+                  label = "New Challenge",
+                  size = "small",
+                  style = "default"
+                  ),
+                br(),
+                br(),
                 selectInput("answer", "Select your answer", 
                             choices = list("A", "B", "C", ""), 
-                            selected = "")
-              )
-            ),
-            br(),
-            fluidRow(
-              column(
-                width = 4, 
-                offset = 6,
-                verbatimTextOutput("response")
+                            selected = ""),
+                actionButton(
+                  inputId = "submit",
+                  label = "Submit",
+                  size = "small",
+                  style = "default"
+                ),
+                br(),
+                br(),
+                uiOutput("icon"),
+                br(),
+                uiOutput("response")
               )
             )
           ),
@@ -333,7 +358,6 @@ ui <- list(
     )
   )
 )
-
 # Server implimentation ----
 server <- function(input, output, session) {
   ## Start button ----
@@ -341,7 +365,7 @@ server <- function(input, output, session) {
     updateTabItems(session, "pages", "plots")
   })
   
-  ## Example plots ----
+  ## Explore plots ----
   ### Reset of the model line checkboxes 
   observeEvent(
     eventExpr = input$dataset, 
@@ -373,48 +397,68 @@ server <- function(input, output, session) {
       ford3$se_residue <- ford3$Data - ford3$seasonal
       ford3$comb <- ford3$trend + ford3$seasonal
       
-      output$timeseriesplot <- renderPlot({
-          ford_plot <- ggplot(ford3, aes(Index)) +
-            geom_line(data = ford3, 
-                      aes(y = Data, color = "Original Series"),size = 1) +
-            labs(title = "Time Series Decomposition of Ford Stock Price",
-                 x = "Time", y = "Price ($)") +
-            scale_color_manual(
-              name = "Components",
-              values = c(
-                "Original Series" = boastUtils::psuPalette[3],
-                "Model" = boastUtils::psuPalette[1],
-                "Residue" = boastUtils::boastPalette[2]
-              )
-            ) +
-            theme(
-              text = element_text(size = 16)
+      output$timeseriesplot <- renderPlot(
+        expr = {
+        ford_plot <- ggplot(ford3, aes(Index)) +
+          geom_line(data = ford3, 
+                    aes(y = Data, color = "Original Series"),size = 1) +
+          labs(title = "Time Series Decomposition of Ford Stock Price",
+               x = "Time", y = "Price ($)") +
+          scale_color_manual(
+            name = "Components",
+            values = c(
+              "Original Series" = boastUtils::psuPalette[3],
+              "Model" = boastUtils::psuPalette[1],
+              "Residue" = boastUtils::boastPalette[2]
             )
-          if (input$seeTrend == TRUE && input$seeSeasonal == FALSE) {
-            ford_plot <- ford_plot + geom_line(data = ford3, 
-                                               aes(y = trend, colour = "Model"), 
-                                               size = 1) +
-              geom_line(data= ford3, 
-                        aes(y=trend_residue, colour = "Residue"), size = 1) 
-          }
-          else if (input$seeSeasonal == TRUE && input$seeTrend == FALSE) {
-            ford_plot <- ford_plot + geom_line(
-                                        data = ford3, 
-                                        aes(y = seasonal, color = "Model"), 
-                                        size = 1) +
-              geom_line(data= ford3, 
-                        aes(y=se_residue, colour = "Residue"), size = 1)
-          }
-          
-          else if (input$seeTrend == TRUE && input$seeSeasonal == TRUE) {
-            ford_plot <- ford_plot + geom_line(data = ford3, 
-                                               aes(y = comb, color = "Model"), 
-                                               size = 1) +
-              geom_line(data= ford3, 
-                        aes(y=remainder, colour = "Residue"), size = 1)
-          }
-          ford_plot
-      })
+          ) +
+          theme(
+            text = element_text(size = 16)
+          )
+        if (input$seeTrend == TRUE && input$seeSeasonal == FALSE) {
+          ford_plot <- ford_plot + geom_line(data = ford3, 
+                                             aes(y = trend, colour = "Model"), 
+                                             size = 1) +
+            geom_line(data= ford3, 
+                      aes(y=trend_residue, colour = "Residue"), size = 1) 
+        }
+        else if (input$seeSeasonal == TRUE && input$seeTrend == FALSE) {
+          ford_plot <- ford_plot + geom_line(
+            data = ford3, 
+            aes(y = seasonal, color = "Model"), 
+            size = 1) +
+            geom_line(data= ford3, 
+                      aes(y=se_residue, colour = "Residue"), size = 1)
+        }
+        
+        else if (input$seeTrend == TRUE && input$seeSeasonal == TRUE) {
+          ford_plot <- ford_plot + geom_line(data = ford3, 
+                                             aes(y = comb, color = "Model"), 
+                                             size = 1) +
+            geom_line(data= ford3, 
+                      aes(y=remainder, colour = "Residue"), size = 1)
+        }
+        ford_plot
+      },
+      alt = {if (input$seeTrend == FALSE && input$seeSeasonal == FALSE) { 
+        "This is the time series decomposition plot of the Ford Stock Price 
+      with time on the x-axis, and price in dollars on the y-axis."}
+      else if (input$seeTrend == TRUE && input$seeSeasonal == FALSE) {
+        "This is the time series decomposition plot of the Ford Stock Price 
+        with time on the x-axis, and price in dollars on the y-axis, and showing 
+        the trend of the plot."
+      }
+      else if (input$seeSeasonal == TRUE && input$seeTrend == FALSE) {
+        "This is the time series decomposition plot of the Ford Stock Price 
+        with time on the x-axis, and price in dollars on the y-axis, and showing 
+        the seasonality of the plot."
+      }
+      else if (input$seeTrend == TRUE && input$seeSeasonal == TRUE) {
+        "This is the time series decomposition plot of the Ford Stock Price 
+        with time on the x-axis, and price in dollars on the y-axis, and showing 
+        both trend and seasonality of the plot." 
+      }
+        })
     }
     
     ### Unemployment ----
@@ -429,13 +473,14 @@ server <- function(input, output, session) {
       unr_dec$se_residue <- unr_dec$Data - unr_dec$seasonal
       unr_dec$comb <- unr_dec$trend + unr_dec$seasonal
       
-      output$timeseriesplot <- renderPlot({
-          unr_plot <- ggplot(unr_dec, aes(Index)) +
-            geom_line(data = unr_dec, 
-                      aes(y = Data, color = "Original Series"),size = 1) +
-            labs(title = "Time Series Decomposition of the Unemployment Rate 
+      output$timeseriesplot <- renderPlot(
+        expr = {
+        unr_plot <- ggplot(unr_dec, aes(Index)) +
+          geom_line(data = unr_dec, 
+                    aes(y = Data, color = "Original Series"),size = 1) +
+          labs(title = "Time Series Decomposition of the Unemployment Rate 
                  in the US",
-                 x = "Time", y = "Price ($)") +
+               x = "Time", y = "Price ($)") +
           scale_color_manual(
             name = "Components",
             values = c(
@@ -444,36 +489,55 @@ server <- function(input, output, session) {
               "Residue" = boastUtils::boastPalette[2]
             )
           )+
-            theme(
-              text = element_text(size = 16)
-            )
-          if (input$seeTrend == TRUE && input$seeSeasonal == FALSE) {
-            unr_plot <- unr_plot + geom_line(data = unr_dec, 
-                                               aes(y = trend, colour = "Model"), 
-                                               size = 1) +
-              geom_line(data= unr_dec, 
-                        aes(y=trend_residue, colour = "Residue"), size = 1) 
-          }
-          else if (input$seeSeasonal == TRUE && input$seeTrend == FALSE) {
-            unr_plot <- unr_plot + geom_line(
-              data = unr_dec, 
-              aes(y = seasonal, color = "Model"), 
-              size = 1) +
-              geom_line(data= unr_dec, 
-                        aes(y=se_residue, colour = "Residue"), size = 1)
-          }
-          
-          else if (input$seeTrend == TRUE && input$seeSeasonal == TRUE) {
-            unr_plot <- unr_plot + geom_line(data = unr_dec, 
-                                               aes(y = comb, color = "Model"), 
-                                               size = 1) +
-              geom_line(data= unr_dec, 
-                        aes(y=remainder, colour = "Residue"), size = 1)
-          }
-          unr_plot
-      })
+          theme(
+            text = element_text(size = 16)
+          )
+        if (input$seeTrend == TRUE && input$seeSeasonal == FALSE) {
+          unr_plot <- unr_plot + geom_line(data = unr_dec, 
+                                           aes(y = trend, colour = "Model"), 
+                                           size = 1) +
+            geom_line(data= unr_dec, 
+                      aes(y=trend_residue, colour = "Residue"), size = 1) 
+        }
+        else if (input$seeSeasonal == TRUE && input$seeTrend == FALSE) {
+          unr_plot <- unr_plot + geom_line(
+            data = unr_dec, 
+            aes(y = seasonal, color = "Model"), 
+            size = 1) +
+            geom_line(data= unr_dec, 
+                      aes(y=se_residue, colour = "Residue"), size = 1)
+        }
+        
+        else if (input$seeTrend == TRUE && input$seeSeasonal == TRUE) {
+          unr_plot <- unr_plot + geom_line(data = unr_dec, 
+                                           aes(y = comb, color = "Model"), 
+                                           size = 1) +
+            geom_line(data= unr_dec, 
+                      aes(y=remainder, colour = "Residue"), size = 1)
+        }
+        unr_plot
+      },
+      alt = {if (input$seeTrend == FALSE && input$seeSeasonal == FALSE) {
+        "This is the time series decomposition plot of the Unemployment in the
+        U.S. with time on the x-axis, and price in dollars on the y-axis."}
+        else if (input$seeTrend == TRUE && input$seeSeasonal == FALSE) {
+          "This is the time series decomposition plot of the Unemployment in the
+        U.S. with time on the x-axis, and price in dollars on the y-axis, and showing 
+        the trend of the plot."
+        }
+        else if (input$seeSeasonal == TRUE && input$seeTrend == FALSE) {
+          "This is the time series decomposition plot of the Unemployment in the
+        U.S. with time on the x-axis, and price in dollars on the y-axis, and showing 
+        the seasonality of the plot."
+        }
+        else if (input$seeTrend == TRUE && input$seeSeasonal == TRUE) {
+          "This is the time series decomposition plot of the Unemployment in the
+        U.S. with time on the x-axis, and price in dollars on the y-axis, and showing 
+        both trend and seasonality of the plot." 
+        }
+    })
     }
-    
+    ### S&P 500 ---- 
     else if (input$dataset == "S&P 500"){
       bh <- read.csv(file = "sp500.csv")
       time = bh[[1]]
@@ -485,53 +549,74 @@ server <- function(input, output, session) {
       sp_dec$trend_residue <- sp_dec$Data - sp_dec$trend
       sp_dec$se_residue <- sp_dec$Data - sp_dec$seasonal
       
-      output$timeseriesplot <- renderPlot({
-
-          sp_plot <- ggplot(sp_dec, aes(Index)) +
-            geom_line(data = sp_dec, 
-                      aes(y = Data, color = "Original Series"),size = 1) +
-            labs(title = "Price of the Standard and Poor 500 Index price",
-                 x = "Time", y = "Price ($)") +
-            scale_color_manual(
-              name = "Components",
-              values = c(
-                "Original Series" = boastUtils::psuPalette[3],
-                "Model" = boastUtils::psuPalette[1],
-                "Residue" = boastUtils::boastPalette[2]
-              )
-            ) +
-            theme(
-              text = element_text(size = 16)
+      output$timeseriesplot <- renderPlot(
+        expr = {
+        
+        sp_plot <- ggplot(sp_dec, aes(Index)) +
+          geom_line(data = sp_dec, 
+                    aes(y = Data, color = "Original Series"),size = 1) +
+          labs(title = "Price of the Standard and Poor 500 Index price",
+               x = "Time", y = "Price ($)") +
+          scale_color_manual(
+            name = "Components",
+            values = c(
+              "Original Series" = boastUtils::psuPalette[3],
+              "Model" = boastUtils::psuPalette[1],
+              "Residue" = boastUtils::boastPalette[2]
             )
-          if (input$seeTrend == TRUE && input$seeSeasonal == FALSE) {
-            sp_plot <- sp_plot + geom_line(data = sp_dec, 
-                                             aes(y = trend, colour = "Model"), 
-                                             size = 1) +
-              geom_line(data= sp_dec, 
-                        aes(y=trend_residue, colour = "Residue"), size = 1) 
-          }
-          else if (input$seeSeasonal == TRUE && input$seeTrend == FALSE) {
-            sp_plot <- sp_plot + geom_line(
-              data = sp_dec, 
-              aes(y = seasonal, color = "Model"), 
-              size = 1) +
-              geom_line(data= sp_dec, 
-                        aes(y=se_residue, colour = "Residue"), size = 1)
-          }
-          
-          else if (input$seeTrend == TRUE && input$seeSeasonal == TRUE) {
-            sp_plot <- sp_plot + geom_line(data = sp_dec, 
-                                             aes(y = comb, color = "Model"), 
-                                             size = 1) +
-              geom_line(data= sp_dec, 
-                        aes(y=remainder, colour = "Residue"), size = 1)
-          }
-          sp_plot
-
+          ) +
+          theme(
+            text = element_text(size = 16)
+          )
+        if (input$seeTrend == TRUE && input$seeSeasonal == FALSE) {
+          sp_plot <- sp_plot + geom_line(data = sp_dec, 
+                                         aes(y = trend, colour = "Model"), 
+                                         size = 1) +
+            geom_line(data= sp_dec, 
+                      aes(y=trend_residue, colour = "Residue"), size = 1) 
+        }
+        else if (input$seeSeasonal == TRUE && input$seeTrend == FALSE) {
+          sp_plot <- sp_plot + geom_line(
+            data = sp_dec, 
+            aes(y = seasonal, color = "Model"), 
+            size = 1) +
+            geom_line(data= sp_dec, 
+                      aes(y=se_residue, colour = "Residue"), size = 1)
+        }
+        
+        else if (input$seeTrend == TRUE && input$seeSeasonal == TRUE) {
+          sp_plot <- sp_plot + geom_line(data = sp_dec, 
+                                         aes(y = comb, color = "Model"), 
+                                         size = 1) +
+            geom_line(data= sp_dec, 
+                      aes(y=remainder, colour = "Residue"), size = 1)
+        }
+        sp_plot
+        
+      },
+      alt = { if (input$seeTrend == FALSE && input$seeSeasonal == FALSE) {
+        "This is the time series decomposition plot of the price of the standard 
+        and poor 500 index price with time on the x-axis, and price in dollars 
+        on the y-axis." }
+        else if (input$seeTrend == TRUE && input$seeSeasonal == FALSE) {
+          "This is the time series decomposition plot of the price of the standard 
+        and poor 500 index price with time on the x-axis, and price in dollars 
+        on the y-axis, and showing the trend of the plot."
+        }
+        else if (input$seeSeasonal == TRUE && input$seeTrend == FALSE) {
+          "This is the time series decomposition plot of the price of the standard 
+        and poor 500 index price with time on the x-axis, and price in dollars 
+        on the y-axis, and showing the seasonality of the plot."
+        }
+        else if (input$seeTrend == TRUE && input$seeSeasonal == TRUE) {
+          "This is the time series decomposition plot of the price of the standard 
+        and poor 500 index price with time on the x-axis, and price in dollars 
+        on the y-axis, and showing both trend and seasonality of the plot." 
+        }
       })
     }
     
-    ### SCE weather ----
+    ### SC weather ----
     else if (input$dataset == "State College Weather"){
       sc <- read.csv(file = "StateCollegeWeather.csv")
       time = sc[[1]]
@@ -543,13 +628,14 @@ server <- function(input, output, session) {
       sc_dec$trend_residue <- sc_dec$Data - sc_dec$trend
       sc_dec$se_residue <- sc_dec$Data - sc_dec$seasonal
       
-      output$timeseriesplot <- renderPlot({
-
-          sc_plot <- ggplot(sc_dec, aes(Index)) +
-            labs(title = "Time Series Decomposition of State College Weather",
-                 x = "Time", y = "Temperature") +
-            geom_line(data = sc_dec, 
-                      aes(y = Data, color = "Original Series"),size = 1) +
+      output$timeseriesplot <- renderPlot(
+        expr = {
+        
+        sc_plot <- ggplot(sc_dec, aes(Index)) +
+          labs(title = "Time Series Decomposition of State College Weather",
+               x = "Time", y = "Temperature") +
+          geom_line(data = sc_dec, 
+                    aes(y = Data, color = "Original Series"),size = 1) +
           scale_color_manual(
             name = "Components",
             values = c(
@@ -558,36 +644,55 @@ server <- function(input, output, session) {
               "Residue" = boastUtils::boastPalette[2]
             )
           ) +
-            theme(
-              text = element_text(size = 16)
-            )
-          if (input$seeTrend == TRUE && input$seeSeasonal == FALSE) {
-            sc_plot <- sc_plot + geom_line(data = sc_dec, 
-                                           aes(y = trend, colour = "Model"), 
-                                           size = 1) +
-              geom_line(data= sc_dec, 
-                        aes(y=trend_residue, colour = "Residue"), size = 1) 
-          }
-          else if (input$seeSeasonal == TRUE && input$seeTrend == FALSE) {
-            sc_plot <- sc_plot + geom_line(
-              data = sc_dec, 
-              aes(y = seasonal, color = "Model"), 
-              size = 1) +
-              geom_line(data= sc_dec, 
-                        aes(y=se_residue, colour = "Residue"), size = 1)
-          }
-          
-          else if (input$seeTrend == TRUE && input$seeSeasonal == TRUE) {
-            sc_plot <- sc_plot + geom_line(data = sc_dec, 
-                                           aes(y = comb, color = "Model"), 
-                                           size = 1) +
-              geom_line(data= sc_dec, 
-                        aes(y=remainder, colour = "Residue"), size = 1)
-          }
-          sc_plot
+          theme(
+            text = element_text(size = 16)
+          )
+        if (input$seeTrend == TRUE && input$seeSeasonal == FALSE) {
+          sc_plot <- sc_plot + geom_line(data = sc_dec, 
+                                         aes(y = trend, colour = "Model"), 
+                                         size = 1) +
+            geom_line(data= sc_dec, 
+                      aes(y=trend_residue, colour = "Residue"), size = 1) 
+        }
+        else if (input$seeSeasonal == TRUE && input$seeTrend == FALSE) {
+          sc_plot <- sc_plot + geom_line(
+            data = sc_dec, 
+            aes(y = seasonal, color = "Model"), 
+            size = 1) +
+            geom_line(data= sc_dec, 
+                      aes(y=se_residue, colour = "Residue"), size = 1)
+        }
+        
+        else if (input$seeTrend == TRUE && input$seeSeasonal == TRUE) {
+          sc_plot <- sc_plot + geom_line(data = sc_dec, 
+                                         aes(y = comb, color = "Model"), 
+                                         size = 1) +
+            geom_line(data= sc_dec, 
+                      aes(y=remainder, colour = "Residue"), size = 1)
+        }
+        sc_plot
+      },
+      alt = {if (input$seeTrend == FALSE && input$seeSeasonal == FALSE) {
+        "This is the time series decomposition plot of the State College Weather 
+        with time on the x-axis, and temperature on the y-axis." }
+        else if (input$seeTrend == TRUE && input$seeSeasonal == FALSE) {
+          "This is the time series decomposition plot of the State College Weather 
+        with time on the x-axis, and temperature on the y-axis, and showing the 
+          trend of the plot."
+        }
+        else if (input$seeSeasonal == TRUE && input$seeTrend == FALSE) {
+          "This is the time series decomposition plot of the State College Weather 
+        with time on the x-axis, and temperature on the y-axis, and showing the seasonality of the plot."
+        }
+        else if (input$seeTrend == TRUE && input$seeSeasonal == TRUE) {
+          "This is the time series decomposition plot of the State College Weather 
+        with time on the x-axis, and temperature on the y-axis, and showing both 
+          trend and seasonality of the plot." 
+        }
       })
     }
     
+    ### GDP growth rate of US ----
     else if (input$dataset == "GDP growth rate of U.S."){
       sc <- read.csv(file = "gdp.csv")
       time = sc[[1]]
@@ -598,49 +703,68 @@ server <- function(input, output, session) {
       gdp_dec$trend_residue <- gdp_dec$Data - gdp_dec$trend
       gdp_dec$se_residue <- gdp_dec$Data - gdp_dec$seasonal
       
-      output$timeseriesplot <- renderPlot({
-
-          gdp_plot <- ggplot(gdp_dec, aes(Index)) +
-            labs(title = "Time Series Decomposition of State College Weather",
-                 x = "Time", y = "Temperature") +
-            geom_line(data = gdp_dec, 
-                      aes(y = Data, color = "Original Series"),size = 1) +
-            scale_color_manual(
-              name = "Components",
-              values = c(
-                "Original Series" = boastUtils::psuPalette[3],
-                "Model" = boastUtils::psuPalette[1],
-                "Residue" = boastUtils::boastPalette[2]
-              )
-            )+
-            theme(
-              text = element_text(size = 16)
+      output$timeseriesplot <- renderPlot(
+        expr = {
+        
+        gdp_plot <- ggplot(gdp_dec, aes(Index)) +
+          labs(title = "Time Series Decomposition of the U.S. GDP Growth Rate",
+               x = "Time", y = "GDP Growth Rate") +
+          geom_line(data = gdp_dec, 
+                    aes(y = Data, color = "Original Series"),size = 1) +
+          scale_color_manual(
+            name = "Components",
+            values = c(
+              "Original Series" = boastUtils::psuPalette[3],
+              "Model" = boastUtils::psuPalette[1],
+              "Residue" = boastUtils::boastPalette[2]
             )
-          if (input$seeTrend == TRUE && input$seeSeasonal == FALSE) {
-            gdp_plot <- gdp_plot + geom_line(data = gdp_dec, 
+          )+
+          theme(
+            text = element_text(size = 16)
+          )
+        if (input$seeTrend == TRUE && input$seeSeasonal == FALSE) {
+          gdp_plot <- gdp_plot + geom_line(data = gdp_dec, 
                                            aes(y = trend, colour = "Model"), 
                                            size = 1) +
-              geom_line(data= gdp_dec, 
-                        aes(y=trend_residue, colour = "Residue"), size = 1) 
-          }
-          else if (input$seeSeasonal == TRUE && input$seeTrend == FALSE) {
-            gdp_plot <- gdp_plot + geom_line(
-              data = gdp_dec, 
-              aes(y = seasonal, color = "Model"), 
-              size = 1) +
-              geom_line(data= gdp_dec, 
-                        aes(y=se_residue, colour = "Residue"), size = 1)
-          }
-          
-          else if (input$seeTrend == TRUE && input$seeSeasonal == TRUE) {
-            gdp_plot <- gdp_plot + geom_line(data = gdp_dec, 
+            geom_line(data= gdp_dec, 
+                      aes(y=trend_residue, colour = "Residue"), size = 1) 
+        }
+        else if (input$seeSeasonal == TRUE && input$seeTrend == FALSE) {
+          gdp_plot <- gdp_plot + geom_line(
+            data = gdp_dec, 
+            aes(y = seasonal, color = "Model"), 
+            size = 1) +
+            geom_line(data= gdp_dec, 
+                      aes(y=se_residue, colour = "Residue"), size = 1)
+        }
+        
+        else if (input$seeTrend == TRUE && input$seeSeasonal == TRUE) {
+          gdp_plot <- gdp_plot + geom_line(data = gdp_dec, 
                                            aes(y = comb, color = "Model"), 
                                            size = 1) +
-              geom_line(data= gdp_dec, 
-                        aes(y=remainder, colour = "Residue"), size = 1)
-          }
-          gdp_plot
-       
+            geom_line(data= gdp_dec, 
+                      aes(y=remainder, colour = "Residue"), size = 1)
+        }
+        gdp_plot
+        
+      },
+      alt = {if (input$seeTrend == FALSE && input$seeSeasonal == FALSE) {
+        "This is the time series decomposition plot of the U.S. GDP Growth rate
+        with time on the x-axis, and GDP growth rate on the y-axis." }
+        else if (input$seeTrend == TRUE && input$seeSeasonal == FALSE) {
+          "This is the time series decomposition plot of the U.S. GDP Growth rate
+        with time on the x-axis, and GDP growth rate on the y-axis, and showing the 
+          trend of the plot."
+        }
+        else if (input$seeSeasonal == TRUE && input$seeTrend == FALSE) {
+          "This is the time series decomposition plot of the U.S. GDP Growth rate
+        with time on the x-axis, and GDP growth rate on the y-axis, and showing the seasonality of the plot."
+        }
+        else if (input$seeTrend == TRUE && input$seeSeasonal == TRUE) {
+          "This is the time series decomposition plot of the U.S. GDP Growth rate
+        with time on the x-axis, and GDP growth rate on the y-axis, and showing both 
+          trend and seasonality of the plot." 
+        }
       })
     }
   })
@@ -668,6 +792,7 @@ server <- function(input, output, session) {
     }
   )
   
+  ## Simulation ----
   observeEvent(input$nextpart, {
     updateTabItems(session, "pages", "modify")
   })
@@ -787,8 +912,7 @@ server <- function(input, output, session) {
             
           })
         
-        
-        
+        ###  Path of multiple processes ----
         observeEvent(
           {input$path
             input$season
@@ -822,7 +946,7 @@ server <- function(input, output, session) {
   })
   
   
-  #generate challenges
+  ##Generate challenges ---- 
   c <- reactiveValues(right=c(sample(1:11,1)))
   
   observeEvent(input$newchallenge,{
@@ -1086,111 +1210,79 @@ server <- function(input, output, session) {
         src = "answer11c.jpg"))
     }
   }, deleteFile = FALSE)
-  
-  output$response <- renderText({
-    if ((c$right == 1) & (input$answer == "C")){
-      "Correct!"
-    }   
-    else if ((c$right == 1) & (input$answer == "B")){
-      "Sorry, please try again.\nHint: Is the trend going up or going down?"
-    }
-    else if ((c$right == 1) & (input$answer == "A")){
-      "Sorry, please try again.\nHint: Look at the scale"
-    }
-    else if ((c$right == 2) & (input$answer == "C")){
-      "Correct!"
-    }
-    else if ((c$right == 2) & (input$answer == "A")){
-      "Sorry, please try again."
-    }
-    else if ((c$right == 2) & (input$answer == "B")){
-      "Sorry, please try again."
-    }
-    else if ((c$right == 3) & (input$answer == "A")){
-      "Correct!"
-    }   
-    else if ((c$right == 3) & (input$answer == "B")){
-      "Sorry, please try again.\nHint: please double check the seasonality."
-    }
-    else if ((c$right == 3) & (input$answer == "C")){
-      "Sorry, please try again.\nHint: Is the trend going up or going down?"
-    }
-    else if ((c$right == 4) & (input$answer == "B")){
-      "Correct!"
-    }
-    else if ((c$right == 4) & (input$answer == "A")){
-      "Sorry, please try again.\nHint: Is the trend going up or going down?"
-    }
-    else if ((c$right == 4) & (input$answer == "C")){
-      "Sorry, please try again.\nHint: Look at the scale"
-    }
-    else if ((c$right == 5) & (input$answer == "A")){
-      "Correct!"
-    }
-    else if ((c$right == 5) & (input$answer == "B")){
-      "Sorry, please try again."
-    }
-    else if ((c$right == 5) & (input$answer == "C")){
-      "Sorry, please try again."
-    }
-    else if ((c$right == 6) & (input$answer == "B")){
-      "Correct!"
-    }
-    else if ((c$right == 6) & (input$answer == "A")){
-      "Sorry, please try again.\nHint: Is the trend going up or going down?"
-    }
-    else if ((c$right == 6) & (input$answer == "C")){
-      "Sorry, please try again.\nHint: please double check the seasonality."
-    }
-    else if ((c$right == 7) & (input$answer == "C")){
-      "Correct!"
-    }
-    else if ((c$right == 7) & (input$answer == "A")){
-      "Sorry, please try again.\nHint: Is the trend going up or going down?"
-    }
-    else if ((c$right == 7) & (input$answer == "B")){
-      "Sorry, please try again.\nHint: Is the trend going up or going down?"
-    }
-    else if ((c$right == 8) & (input$answer == "B")){
-      "Correct!"
-    }
-    else if ((c$right == 8) & (input$answer == "A")){
-      "Sorry, please try again.\nHint: Is the trend going up or going down?"
-    }
-    else if ((c$right == 8) & (input$answer == "C")){
-      "Sorry, please try again.\nHint: Look at the scale"
-    }
-    else if ((c$right == 9) & (input$answer == "A")){
-      "Correct!"
-    }   
-    else if ((c$right == 9) & (input$answer == "B")){
-      "Sorry, please try again.\nHint: please double check the seasonality."
-    }
-    else if ((c$right == 9) & (input$answer == "C")){
-      "Sorry, please try again.\nHint: Is the trend going up or going down?"
-    }
-    else if ((c$right == 10) & (input$answer == "B")){
-      "Correct!"
-    }   
-    else if ((c$right == 10) & (input$answer == "A")){
-      "Sorry, please try again.\nHint: please double check the seasonality."
-    }
-    else if ((c$right == 10) & (input$answer == "C")){
-      "Sorry, please try again.\nHint: Is the trend going up or going down?"
-    }
-    else if ((c$right == 11) & (input$answer == "B")){
-      "Correct!"
-    }
-    else if ((c$right == 11) & (input$answer == "A")){
-      "Sorry, please try again."
-    }
-    else if ((c$right == 11) & (input$answer == "C")){
-      "Sorry, please try again."
-    }
-  })
-  
-}
 
+  
+  observeEvent(input$submit, {
+    correct <- (((c$right == 1) && (input$answer == "C")) ||
+                   ((c$right == 2) && (input$answer == "C")) ||
+                   ((c$right == 3) && (input$answer == "A")) ||
+                   ((c$right == 4) && (input$answer == "B")) ||
+                   ((c$right == 5) && (input$answer == "A")) ||
+                   ((c$right == 6) && (input$answer == "B")) ||
+                   ((c$right == 7) && (input$answer == "C")) ||
+                   ((c$right == 8) && (input$answer == "B")) ||
+                   ((c$right == 9) && (input$answer == "A")) ||
+                   ((c$right == 10) && (input$answer == "B")) ||
+                   ((c$right == 11) && (input$answer == "B")))
+    
+    if (correct) {
+      output$icon <- renderIcon(icon = "correct", width = 45) 
+    } 
+    else {output$icon <- renderIcon(icon = "incorrect", width = 45)
+    }
+    
+    output$response <- renderText({
+      if ((c$right == 1) & (input$answer == "B")){
+        "Hint: Is the trend going up or going down?"
+      }
+      else if ((c$right == 1) & (input$answer == "A")){
+        "Hint: Look at the scale"
+      }  
+      else if ((c$right == 3) & (input$answer == "B")){
+        "Hint: please double check the seasonality."
+      }
+      else if ((c$right == 3) & (input$answer == "C")){
+        "Hint: Is the trend going up or going down?"
+      }
+      else if ((c$right == 4) & (input$answer == "A")){
+        "Hint: Is the trend going up or going down?"
+      }
+      else if ((c$right == 4) & (input$answer == "C")){
+        "Hint: Look at the scale"
+      }
+      else if ((c$right == 6) & (input$answer == "A")){
+        "Hint: Is the trend going up or going down?"
+      }
+      else if ((c$right == 6) & (input$answer == "C")){
+        "Hint: please double check the seasonality."
+      }
+      else if ((c$right == 7) & (input$answer == "A")){
+        "Hint: Is the trend going up or going down?"
+      }
+      else if ((c$right == 7) & (input$answer == "B")){
+        "Hint: Is the trend going up or going down?"
+      }
+      else if ((c$right == 8) & (input$answer == "A")){
+        "Hint: Is the trend going up or going down?"
+      }
+      else if ((c$right == 8) & (input$answer == "C")){
+        "Hint: Look at the scale"
+      }  
+      else if ((c$right == 9) & (input$answer == "B")){
+        "Hint: please double check the seasonality."
+      }
+      else if ((c$right == 9) & (input$answer == "C")){
+        "Hint: Is the trend going up or going down?"
+      }   
+      else if ((c$right == 10) & (input$answer == "A")){
+        "Hint: please double check the seasonality."
+      }
+      else if ((c$right == 10) & (input$answer == "C")){
+        "Hint: Is the trend going up or going down?"
+      } 
+    })
+  })
+}
 
 # Boast App Call ----
 boastUtils::boastApp(ui = ui, server = server)

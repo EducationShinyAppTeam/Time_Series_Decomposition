@@ -1,0 +1,24 @@
+Title: Time Series Decomposition
+ShortName: Time Series Decomposition
+Date: 2020-05-13
+Lifecycle: experimental
+Authors@R: c(
+    person(given = "Jiajun", family = "Gao", role = c("aut")),
+    person(given = "Dennis", family = "Pearl", role = c("aut")),
+    person(given = "Neil", family = "Hatfield", role = c("aut"))
+  )
+Chapter: Time Series
+Description: This app helps learners distinguish different components of a time series plot.
+        First, review the meaning of the different components.
+        Second, explore those components for real datasets.
+        Third, users control the trend, seasonality, random effects to see how they combine into a full time series.
+        Last, users are assis on their knowledge. 
+LearningObjectives: c(
+    "This application is to help you better understand trend, seasonality, and the random component of time series plots."
+  )
+DisplayMode: Normal
+URL: https://psu-eberly.shinyapps.io/Time_Series_Decomposition
+BugReports: https://github.com/EducationShinyAppTeam/Time_Series_Decomposition/issues
+License: CC-BY-NC-SA-4.0
+Tags: simulation
+Type: Shiny
