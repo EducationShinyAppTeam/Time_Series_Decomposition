@@ -949,10 +949,24 @@ server <- function(input, output, session) {
   ##Generate challenges ---- 
   c <- reactiveValues(right=c(sample(1:11,1)))
   
-  observeEvent(input$newchallenge,{
-    c$right=sample(1:11,1)
-    updateSelectInput(session, inputId = "answer", selected = "")
-  })
+  ### Neil Changes
+  ### Get new challenge and reset feedback ----
+  observeEvent(
+    eventExpr = input$newchallenge,
+    handlerExpr = {
+      c$right <- sample(x = 1:11, size = 1)
+      
+      updateSelectInput(
+        session = session,
+        inputId = "answer",
+        selected = ""
+      )
+      
+      output$icon <- renderIcon()
+      
+      output$response <- renderUI(NULL)
+    }
+  )
   
   observeEvent(
     eventExpr = c(input$newchallenge, c),
