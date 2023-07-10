@@ -87,8 +87,8 @@ ui <- list(
           ),
           br(),br(),
           h2("Acknowledgements"),
-          p("This app was developed and coded by Jiajun Gao and updated by Luqi 
-            Jiao Emanuele in 2023.",
+          p("This app was developed and coded by Jiajun Gao in 2018. Stuart Vas 
+            started updates in 2022 which Luqi Jiao Emanuele completed in 2023.",
             br(),br(),
             "Cite this app as:",
             br(),
@@ -264,9 +264,7 @@ ui <- list(
             fluidRow(
               column(
                 width = 6,
-                imageOutput(
-                  "questiongraph", 
-                  height = 250)
+                imageOutput(outputId = "questiongraph") #, height = 250)
               ),
               column(
                 width = 6,
@@ -1058,7 +1056,6 @@ server <- function(input, output, session) {
   ##Generate challenges ---- 
   c <- reactiveValues(right = c(sample(1:11,1)))
   
-  ### Neil Changes
   ### Get new challenge and reset feedback ----
   observeEvent(
     eventExpr = input$newchallenge,
@@ -1077,6 +1074,9 @@ server <- function(input, output, session) {
     }
   )
   
+  ## Proposed Change: let's build a question bank (CSV) file and put key 
+  ## information there (prompt, images, alt text, hints, answers) so that we don't
+  ## have such things hard coded into the app
   observeEvent(
     eventExpr = c(input$newchallenge, c),
     handlerExpr = {
@@ -1157,195 +1157,47 @@ server <- function(input, output, session) {
     }
   })
   
-  output$questiongraph <- renderImage({
-    if (c$right == 1) {
-      return(list(
-        src = "q1.jpg"))
-    }
-    else if (c$right == 2) {
-      return(list(
-        src = "q2.jpg"))
-    }
-    else if (c$right == 3) {
-      return(list(
-        src = "q3.jpg"))
-    }
-    else if (c$right == 4) {
-      return(list(
-        src = "q4.jpg"))
-    }
-    else if (c$right == 5) {
-      return(list(
-        src = "q5.jpg"))
-    }
-    else if (c$right == 6) {
-      return(list(
-        src = "q6.jpg"))
-    }
-    else if (c$right == 7) {
-      return(list(
-        src = "q7.jpg"))
-    }
-    else if (c$right == 8) {
-      return(list(
-        src = "q8.jpg"))
-    }
-    else if (c$right == 9) {
-      return(list(
-        src = "q9.jpg"))
-    }
-    else if (c$right == 10) {
-      return(list(
-        src = "q10.jpg"))
-    }
-    else if (c$right == 11) {
-      return(list(
-        src = "q11.jpg"))
-    }
-  }, deleteFile = FALSE)
+  output$questiongraph <- renderImage(
+    expr = {
+      list(
+        src = paste0("www/q", c$right, ".jpg"),
+        alt = "This is alt text that needs to be updated!"
+      )
+    },
+    deleteFile = FALSE
+  )
   
-  output$choice1 <- renderImage({
-    if (c$right == 1) {
-      return(list(
-        src = "answer1a.jpg"))
-    }
-    else if (c$right == 2) {
-      return(list(
-        src = "answer2a.jpg"))
-    }
-    else if (c$right == 3) {
-      return(list(
-        src = "answer3a.jpg"))
-    }
-    else if (c$right == 4) {
-      return(list(
-        src = "answer4a.jpg"))
-    }
-    else if (c$right == 5) {
-      return(list(
-        src = "answer5a.jpg"))
-    } 
-    else if (c$right == 6) {
-      return(list(
-        src = "answer6a.jpg"))
-    }
-    else if (c$right == 7) {
-      return(list(
-        src = "answer7a.jpg"))
-    }
-    else if (c$right == 8) {
-      return(list(
-        src = "answer8a.jpg"))
-    }
-    else if (c$right == 9) {
-      return(list(
-        src = "answer9a.jpg"))
-    }
-    else if (c$right == 10) {
-      return(list(
-        src = "answer10a.jpg"))
-    }
-    else if (c$right == 11) {
-      return(list(
-        src = "answer11a.jpg"))
-    }
-  }, deleteFile = FALSE)
+  output$choice1 <- renderImage(
+    expr = {
+      list(
+        src = paste0("www/answer", c$right, "a.jpg"),
+        alt = "This is alt text that needs to be updated!"
+      )
+    },
+    deleteFile = FALSE
+  )
   
   
-  output$choice2 <- renderImage({
-    if (c$right == 1) {
-      return(list(
-        src = "answer1b.jpg"))
-    }
-    else if (c$right == 2) {
-      return(list(
-        src = "answer2b.jpg"))
-    }
-    else if (c$right == 3) {
-      return(list(
-        src = "answer3b.jpg"))
-    }
-    else if (c$right == 4) {
-      return(list(
-        src = "answer4b.jpg"))
-    }
-    else if (c$right == 5) {
-      return(list(
-        src = "answer5b.jpg"))
-    }
-    else if (c$right == 6) {
-      return(list(
-        src = "answer6b.jpg"))
-    }
-    else if (c$right == 7) {
-      return(list(
-        src = "answer7b.jpg"))
-    }
-    else if (c$right == 8) {
-      return(list(
-        src = "answer8b.jpg"))
-    }
-    else if (c$right == 9) {
-      return(list(
-        src = "answer9b.jpg"))
-    }
-    else if (c$right == 10) {
-      return(list(
-        src = "answer10b.jpg"))
-    }
-    else if (c$right == 11) {
-      return(list(
-        src = "answer11b.jpg"))
-    }
-  }, deleteFile = FALSE)
+  output$choice2 <- renderImage(
+    expr = {
+      list(
+        src = paste0("www/answer", c$right, "b.jpg"),
+        alt = "This is alt text that needs to be updated!"
+      )
+    },
+    deleteFile = FALSE
+  )
   
-  output$choice3 <- renderImage({
-    if (c$right == 1) {
-      return(list(
-        src = "answer1c.jpg"))
-    }
-    else if (c$right == 2) {
-      return(list(
-        src = "answer2c.jpg"))
-    }
-    else if (c$right == 3) {
-      return(list(
-        src = "answer3c.jpg"))
-    }
-    else if (c$right == 4) {
-      return(list(
-        src = "answer4c.jpg"))
-    }
-    else if (c$right == 5) {
-      return(list(
-        src = "answer5c.jpg"))
-    }
-    else if (c$right == 6) {
-      return(list(
-        src = "answer6c.jpg"))
-    }
-    else if (c$right == 7) {
-      return(list(
-        src = "answer7c.jpg"))
-    }
-    else if (c$right == 8) {
-      return(list(
-        src = "answer8c.jpg"))
-    }
-    else if (c$right == 9) {
-      return(list(
-        src = "answer9c.jpg"))
-    }
-    else if (c$right == 10) {
-      return(list(
-        src = "answer10c.jpg"))
-    }
-    else if (c$right == 11) {
-      return(list(
-        src = "answer11c.jpg"))
-    }
-  }, deleteFile = FALSE)
-
+  output$choice3 <- renderImage(
+    expr = {
+      list(
+        src = paste0("www/answer", c$right, "c.jpg"),
+        alt = "This is alt text that needs to be updated!"
+      )
+    },
+    deleteFile = FALSE
+  )
+  
   observeEvent(
     eventExpr = input$submit, 
     handlerExp = {
