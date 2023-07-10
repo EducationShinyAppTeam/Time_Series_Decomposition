@@ -1,11 +1,12 @@
 Title: Time Series Decomposition
 ShortName: Time Series Decomposition
-Date: 2020-05-13
+Date: 2022-05-13
 Lifecycle: experimental
 Authors@R: c(
     person(given = "Jiajun", family = "Gao", role = c("aut")),
-    person(given = "Dennis", family = "Pearl", role = c("aut")),
-    person(given = "Neil", family = "Hatfield", role = c("aut"))
+    person(given = "Dennis", family = "Pearl", role = c("ctb")),
+    person(given = "Neil", family = "Hatfield", role = c("ctb")),
+    person(given = "Luqi", family = "Jiao Emanuele", role = c("ctb"))
   )
 Chapter: Time Series
 Description: This app helps learners distinguish different components of a time series plot.

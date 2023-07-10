@@ -11,7 +11,6 @@ library(zoo)
 
 # Define UI for App ----
 
-# UI ----
 ui <- list(
   dashboardPage(
     skin = "purple",
@@ -19,10 +18,14 @@ ui <- list(
     dashboardHeader(
       title = "Time Series Decomposition",
       titleWidth = 250,
-      tags$li(class = "dropdown", actionLink("info", icon("info"))),
+      tags$li(
+        class = "dropdown", 
+        actionLink("info", icon("info"))),
       tags$li(
         class = "dropdown",
-        boastUtils::surveyLink(name = "Time_Series_Decomposition")
+        tags$a(target = "_blank", icon("comments"),
+               href = "https://pennstate.qualtrics.com/jfe/form/SV_7TLIkFtJEJ7fEPz?appName=Assumptions_of_ANOVA"
+        )
       ),
       tags$li(
         class = "dropdown",
@@ -31,7 +34,7 @@ ui <- list(
         )
       )
     ),
-    ## Sidebar ----
+    ## Create the sidebar/left navigation menu ----
     dashboardSidebar(
       width = 250,
       sidebarMenu(
@@ -48,10 +51,10 @@ ui <- list(
         boastUtils::sidebarFooter()
       )
     ),
-    ## Body ----
+    ## Create the content ----
     dashboardBody(
       tabItems(
-        ### Overview ----
+        ### Set up the Overview Page ----
         tabItem(
           tabName = "intro",
           withMathJax(),
@@ -73,28 +76,29 @@ ui <- list(
             tags$li("Play with it and have fun!")
           ),
           br(),
-          div(
-            style = "text-align: center",
+          div(style = "text-align: center",
             bsButton(
               inputId = "start", 
               label = "Explore", 
               size = "large", 
-              icon = icon("bolt")
+              icon = icon("bolt"),
+              style = "default"
             )
           ),
           br(),br(),
           h2("Acknowledgements"),
-          p("This app was developed and coded by Jiajun Gao and updated in 2023 
-            by Luqi Jiao Emanuele.",
+          p("This app was developed and coded by Jiajun Gao and updated by Luqi 
+            Jiao Emanuele in 2023.",
             br(),br(),
             "Cite this app as:",
             br(),
-            citeApp(),
-            br(),br(),
+            boastUtils::citeApp(),
+            br(),
+            br(),
             div(class = "updated",  "Last Update: 06/23/2023 by LJE.")
           )
         ),
-        ### Prerequisities ----
+        ### Set up the Prerequisites Page ----
         tabItem(
           tabName = "prerequisites",
           h2("Time Series"),
@@ -124,7 +128,7 @@ ui <- list(
           )
           
         ),
-        ### Explore ----
+        ### Set up an Explore Page  ----
         tabItem(
           tabName = "plots",
           h2("Explore"),
@@ -138,7 +142,7 @@ ui <- list(
               wellPanel(
                 selectInput(
                   inputId = "dataset",
-                  label="Dataset",
+                  label = "Dataset",
                   choices = c(
                     "Ford Stock Price", "Unemployment Rate", 
                     "S&P 500", "State College Weather", 
@@ -172,12 +176,18 @@ ui <- list(
                 )
               )
             ),
-            bsPopover("nextpart", " ", 
-                      "Go to simulate plots.", 
-                      place = "right", trigger = "hover")
+            br(),
+            div(style = "text-align: center",
+                bsButton(
+                  inputId = "start2", 
+                  label = "Next", 
+                  size = "large", 
+                  style = "default"
+                )
+            )
           )
         ),
-        ### Simulation ----
+        ### Set up the Simulation Page ----
         tabItem(
           tabName = "modify",
           h2("Simulate Time Series Decomposition"),
@@ -206,7 +216,7 @@ ui <- list(
                 ),
                 selectInput(
                   "simulation",
-                  label="Simulation",
+                  label = "Simulation",
                   choices = c("single process", "multiple processes"),
                   selected = "single process"
                 ),
@@ -235,16 +245,17 @@ ui <- list(
             )
           ),
           br(),
-          fluidRow(
-            div(style = "text-align: center",
-                bsButton("next2", "NEXT", size = "large")),
-            bsPopover("next2", " ", 
-                      "Go to the challenge part", 
-                      place = "right", trigger = "hover"
-            )
+          br(),
+          div(style = "text-align: center",
+              bsButton(
+                inputId = "start3", 
+                label = "Next", 
+                size = "large", 
+                style = "default"
+              )
           )
         ),
-        ### Challenge ----
+        ### Set up the Challenge Page ----
         tabItem(
           tabName = "challenge",
           h2("Challenge"),
@@ -258,7 +269,7 @@ ui <- list(
                   height = 250)
               ),
               column(
-                width = 5,
+                width = 6,
                 wellPanel(
                 uiOutput(outputId = "questionDisplayed"),
                 br(),
@@ -301,55 +312,47 @@ ui <- list(
             )
           )
         ),
-        ### References ----
+        ### Set up the References Page-REQUIRED ----
         tabItem(
           tabName = "references",
           withMathJax(),
           h2("References"),
-          p(
-            class = "hangingindent",
+          p(class = "hangingindent",
             "Bailey, E. (2022). shinyBS: Twitter bootstrap components for shiny.
             (v 0.61.1). [R package]. Available from 
             https://CRAN.R-project.org/package=shinyBS"
           ),
-          p(
-            class = "hangingindent",
+          p(class = "hangingindent",
             "Carey, R. and Hatfield, N. J. (2022). boastUtils: BOAST Utilities.
             (v 0.1.12.3). [R package]. Available from
             https://github.com/EducationShinyAppTeam/boastUtils"
           ),
-          p(
-            class = "hangingindent",
+          p(class = "hangingindent",
             "Chang, W. and Borges Ribeio, B. (2021). shinydashboard: Create
             dashboards with 'Shiny'. (v. 0.7.2). [R package]. Available from
             https://CRAN.R-project.org/package=shinydashboard"
           ),
-          p(
-            class = "hangingindent",
+          p(class = "hangingindent",
             "Chang, W., Cheng, J., Allaire, J., Sievert, C., Schloerke, B., Xie, Y.,
             Allen, J., McPherson, J., Dipert, A., and Borges, B. (2021). shiny: 
             Web application framework for R, R package. (v 1.7.1). [R package]. 
             Available from https://CRAN.R-project.org/package=shiny"
           ),
-          p(
-            class = "hangingindent", 
+          p(class = "hangingindent", 
             "Horikoshi M, Tang Y (2018). ggfortify: Data Visualization Tools for 
             Statistical Analysis Results. 
             https://CRAN.R-project.org/package=ggfortify."
           ), 
-          p(
-            class = "hangingindent",
+          p(class = "hangingindent",
             "Perrier, V., Meyer, F., and Granjon, D. (2022), shinyWidgets: Custom 
             Inputs Widgets for Shiny. (v 0.7.0). [R package]. Available from
             https://CRAN.R-project.org/package=shinyWidgets"
           ),
-          p(
-            class = "hangingindent",
+          p(class = "hangingindent",
             "Wickham, W. (2016), ggplot2: Elegant graphics for data analysis,
             R Package. Springer-Verlag New York. (v 3.3.6). [R package].
             Available from https://ggplot2.tidyverse.org"
           ),
-          br(),
           br(),
           br(),
           boastUtils::copyrightInfo()
@@ -358,12 +361,49 @@ ui <- list(
     )
   )
 )
-# Server implimentation ----
+# Define the server ----
 server <- function(input, output, session) {
+  observeEvent(
+    eventExpr = input$info,{
+      handlerExpr = {
+        sendSweetAlert(
+          session = session,
+          title = "Instructions:",
+          type = "info",
+          closeOnClickOutside = TRUE,
+          text = "Learn the different components of a time series plot. Also, 
+      explore the components with real datasets, simulate a plot with different 
+      controls of the components, and test yourself."
+        )}
+    })
+  
   ## Start button ----
-  observeEvent(input$start, {
-    updateTabItems(session, "pages", "plots")
-  })
+  observeEvent(
+    eventExpr = input$start, {
+      handlerExpr = { 
+        updateTabItems(
+          session = session, 
+          inputId = "pages", 
+          selected = "plots")}
+    })
+  
+  observeEvent(
+    eventExpr = input$start2, {
+      handlerExpr = { 
+        updateTabItems(
+          session = session, 
+          inputId = "pages", 
+          selected = "modify")}
+    })
+  
+  observeEvent(
+    eventExpr = input$start3, {
+      handlerExpr = { 
+        updateTabItems(
+          session = session, 
+          inputId = "pages", 
+          selected = "challenge")}
+    })
   
   ## Explore plots ----
   ### Reset of the model line checkboxes 
@@ -386,7 +426,7 @@ server <- function(input, output, session) {
   )
   observe({
     ### Ford plot ----
-    if (input$dataset == "Ford Stock Price"){
+    if (input$dataset == "Ford Stock Price") {
       ford <- read.csv(file = "ford.csv")
       time = ford[[1]]
       price = ford[[5]]
@@ -401,43 +441,49 @@ server <- function(input, output, session) {
         expr = {
         ford_plot <- ggplot(ford3, aes(Index)) +
           geom_line(data = ford3, 
-                    aes(y = Data, color = "Original Series"),size = 1) +
-          labs(title = "Time Series Decomposition of Ford Stock Price",
-               x = "Time", y = "Price ($)") +
+                    aes(y = Data, color = "Original Series"),
+                    linewidth = 1) +
+                    labs(title = "Time Series Decomposition of Ford Stock Price",
+                         x = "Time", y = "Price ($)") +
           scale_color_manual(
             name = "Components",
             values = c(
               "Original Series" = boastUtils::psuPalette[3],
               "Model" = boastUtils::psuPalette[1],
-              "Residue" = boastUtils::boastPalette[2]
-            )
+              "Residue" = boastUtils::boastPalette[2])
           ) +
           theme(
-            text = element_text(size = 16)
-          )
+            text = element_text(size = 16))
+        
         if (input$seeTrend == TRUE && input$seeSeasonal == FALSE) {
-          ford_plot <- ford_plot + geom_line(data = ford3, 
-                                             aes(y = trend, colour = "Model"), 
-                                             size = 1) +
-            geom_line(data= ford3, 
-                      aes(y=trend_residue, colour = "Residue"), size = 1) 
+          ford_plot <- ford_plot + 
+            geom_line(data = ford3, 
+                      aes(y = trend, colour = "Model"),
+                      linewidth = 1) +
+            geom_line(data = ford3, 
+                      aes(y = trend_residue, colour = "Residue"), 
+                      linewidth = 1) 
         }
         else if (input$seeSeasonal == TRUE && input$seeTrend == FALSE) {
-          ford_plot <- ford_plot + geom_line(
-            data = ford3, 
-            aes(y = seasonal, color = "Model"), 
-            size = 1) +
-            geom_line(data= ford3, 
-                      aes(y=se_residue, colour = "Residue"), size = 1)
+          ford_plot <- ford_plot + 
+            geom_line(data = ford3,
+                      aes(y = seasonal, color = "Model"),
+                      linewidth = 1) +
+            geom_line(data = ford3, 
+                      aes(y = se_residue, colour = "Residue"), 
+                      linewidth = 1)
         }
         
         else if (input$seeTrend == TRUE && input$seeSeasonal == TRUE) {
-          ford_plot <- ford_plot + geom_line(data = ford3, 
-                                             aes(y = comb, color = "Model"), 
-                                             size = 1) +
-            geom_line(data= ford3, 
-                      aes(y=remainder, colour = "Residue"), size = 1)
+          ford_plot <- ford_plot + 
+            geom_line(data = ford3, 
+                      aes(y = comb, color = "Model"),
+                      linewidth = 1) +
+            geom_line(data = ford3, 
+                      aes(y = remainder, colour = "Residue"), 
+                      linewidth = 1)
         }
+        
         ford_plot
       },
       alt = {if (input$seeTrend == FALSE && input$seeSeasonal == FALSE) { 
@@ -458,11 +504,11 @@ server <- function(input, output, session) {
         with time on the x-axis, and price in dollars on the y-axis, and showing 
         both trend and seasonality of the plot." 
       }
-        })
-    }
+    })
+  }
     
     ### Unemployment ----
-    else if (input$dataset == "Unemployment Rate"){
+    else if (input$dataset == "Unemployment Rate") {
       bh <- read.csv(file = "UNRATENSA.csv")
       time = bh[[1]]
       ur = bh[[2]]
@@ -477,44 +523,48 @@ server <- function(input, output, session) {
         expr = {
         unr_plot <- ggplot(unr_dec, aes(Index)) +
           geom_line(data = unr_dec, 
-                    aes(y = Data, color = "Original Series"),size = 1) +
+                    aes(y = Data, color = "Original Series"),
+                    linewidth = 1) +
           labs(title = "Time Series Decomposition of the Unemployment Rate 
                  in the US",
                x = "Time", y = "Price ($)") +
-          scale_color_manual(
-            name = "Components",
-            values = c(
-              "Original Series" = boastUtils::psuPalette[3],
-              "Model" = boastUtils::psuPalette[1],
-              "Residue" = boastUtils::boastPalette[2]
-            )
-          )+
-          theme(
-            text = element_text(size = 16)
-          )
+          scale_color_manual(name = "Components",
+                             values = c(
+                               "Original Series" = boastUtils::psuPalette[3],
+                               "Model" = boastUtils::psuPalette[1],
+                               "Residue" = boastUtils::boastPalette[2])
+          ) +
+          theme(text = element_text(size = 16))
+        
         if (input$seeTrend == TRUE && input$seeSeasonal == FALSE) {
-          unr_plot <- unr_plot + geom_line(data = unr_dec, 
-                                           aes(y = trend, colour = "Model"), 
-                                           size = 1) +
-            geom_line(data= unr_dec, 
-                      aes(y=trend_residue, colour = "Residue"), size = 1) 
+          unr_plot <- unr_plot + 
+            geom_line(data = unr_dec,
+                      aes(y = trend, colour = "Model"),
+                      linewidth = 1) +
+            geom_line(data = unr_dec, 
+                      aes(y = trend_residue, colour = "Residue"), 
+                      linewidth = 1) 
         }
         else if (input$seeSeasonal == TRUE && input$seeTrend == FALSE) {
-          unr_plot <- unr_plot + geom_line(
-            data = unr_dec, 
-            aes(y = seasonal, color = "Model"), 
-            size = 1) +
-            geom_line(data= unr_dec, 
-                      aes(y=se_residue, colour = "Residue"), size = 1)
+          unr_plot <- unr_plot +
+            geom_line( data = unr_dec,
+                       aes(y = seasonal, color = "Model"),
+                       linewidth = 1) +
+            geom_line(data = unr_dec, 
+                      aes(y = se_residue, colour = "Residue"), 
+                      linewidth = 1)
         }
         
         else if (input$seeTrend == TRUE && input$seeSeasonal == TRUE) {
-          unr_plot <- unr_plot + geom_line(data = unr_dec, 
-                                           aes(y = comb, color = "Model"), 
-                                           size = 1) +
-            geom_line(data= unr_dec, 
-                      aes(y=remainder, colour = "Residue"), size = 1)
+          unr_plot <- unr_plot + 
+            geom_line(data = unr_dec, 
+                      aes(y = comb, color = "Model"),
+                      linewidth = 1) +
+            geom_line(data = unr_dec, 
+                      aes(y = remainder, colour = "Residue"), 
+                      linewidth = 1)
         }
+        
         unr_plot
       },
       alt = {if (input$seeTrend == FALSE && input$seeSeasonal == FALSE) {
@@ -538,7 +588,7 @@ server <- function(input, output, session) {
     })
     }
     ### S&P 500 ---- 
-    else if (input$dataset == "S&P 500"){
+    else if (input$dataset == "S&P 500") {
       bh <- read.csv(file = "sp500.csv")
       time = bh[[1]]
       price = bh[[5]]
@@ -551,10 +601,10 @@ server <- function(input, output, session) {
       
       output$timeseriesplot <- renderPlot(
         expr = {
-        
         sp_plot <- ggplot(sp_dec, aes(Index)) +
           geom_line(data = sp_dec, 
-                    aes(y = Data, color = "Original Series"),size = 1) +
+                    aes(y = Data, color = "Original Series"),
+                    linewidth = 1) +
           labs(title = "Price of the Standard and Poor 500 Index price",
                x = "Time", y = "Price ($)") +
           scale_color_manual(
@@ -562,35 +612,39 @@ server <- function(input, output, session) {
             values = c(
               "Original Series" = boastUtils::psuPalette[3],
               "Model" = boastUtils::psuPalette[1],
-              "Residue" = boastUtils::boastPalette[2]
-            )
+              "Residue" = boastUtils::boastPalette[2])
           ) +
-          theme(
-            text = element_text(size = 16)
-          )
+          theme(text = element_text(size = 16))
+        
         if (input$seeTrend == TRUE && input$seeSeasonal == FALSE) {
-          sp_plot <- sp_plot + geom_line(data = sp_dec, 
-                                         aes(y = trend, colour = "Model"), 
-                                         size = 1) +
-            geom_line(data= sp_dec, 
-                      aes(y=trend_residue, colour = "Residue"), size = 1) 
+          sp_plot <- sp_plot + 
+            geom_line(data = sp_dec, 
+                      aes(y = trend, colour = "Model"),
+                      linewidth = 1) +
+            geom_line(data = sp_dec, 
+                      aes(y = trend_residue, colour = "Residue"), 
+                      linewidth = 1) 
         }
         else if (input$seeSeasonal == TRUE && input$seeTrend == FALSE) {
-          sp_plot <- sp_plot + geom_line(
-            data = sp_dec, 
-            aes(y = seasonal, color = "Model"), 
-            size = 1) +
-            geom_line(data= sp_dec, 
-                      aes(y=se_residue, colour = "Residue"), size = 1)
+          sp_plot <- sp_plot +
+            geom_line(data = sp_dec,
+                      aes(y = seasonal, color = "Model"),
+                      linewidth = 1) +
+            geom_line(data = sp_dec, 
+                      aes(y = se_residue, colour = "Residue"), 
+                      linewidth = 1)
         }
         
         else if (input$seeTrend == TRUE && input$seeSeasonal == TRUE) {
-          sp_plot <- sp_plot + geom_line(data = sp_dec, 
-                                         aes(y = comb, color = "Model"), 
-                                         size = 1) +
-            geom_line(data= sp_dec, 
-                      aes(y=remainder, colour = "Residue"), size = 1)
+          sp_plot <- sp_plot + 
+            geom_line(data = sp_dec, 
+                      aes(y = comb, color = "Model"), 
+                      linewidth = 1) +
+            geom_line(data = sp_dec, 
+                      aes(y = remainder, colour = "Residue"), 
+                      linewidth = 1)
         }
+        
         sp_plot
         
       },
@@ -617,7 +671,7 @@ server <- function(input, output, session) {
     }
     
     ### SC weather ----
-    else if (input$dataset == "State College Weather"){
+    else if (input$dataset == "State College Weather") {
       sc <- read.csv(file = "StateCollegeWeather.csv")
       time = sc[[1]]
       temp = sc[[2]]
@@ -630,46 +684,49 @@ server <- function(input, output, session) {
       
       output$timeseriesplot <- renderPlot(
         expr = {
-        
         sc_plot <- ggplot(sc_dec, aes(Index)) +
           labs(title = "Time Series Decomposition of State College Weather",
                x = "Time", y = "Temperature") +
           geom_line(data = sc_dec, 
-                    aes(y = Data, color = "Original Series"),size = 1) +
-          scale_color_manual(
-            name = "Components",
-            values = c(
-              "Original Series" = boastUtils::psuPalette[3],
-              "Model" = boastUtils::psuPalette[1],
-              "Residue" = boastUtils::boastPalette[2]
-            )
+                    aes(y = Data, color = "Original Series"),
+                    linewidth = 1) +
+          scale_color_manual(name = "Components",
+                             values = c(
+                               "Original Series" = boastUtils::psuPalette[3],
+                               "Model" = boastUtils::psuPalette[1],
+                               "Residue" = boastUtils::boastPalette[2])
           ) +
-          theme(
-            text = element_text(size = 16)
-          )
+          theme(text = element_text(size = 16))
+        
         if (input$seeTrend == TRUE && input$seeSeasonal == FALSE) {
-          sc_plot <- sc_plot + geom_line(data = sc_dec, 
-                                         aes(y = trend, colour = "Model"), 
-                                         size = 1) +
-            geom_line(data= sc_dec, 
-                      aes(y=trend_residue, colour = "Residue"), size = 1) 
+          sc_plot <- sc_plot + 
+            geom_line(data = sc_dec, 
+                      aes(y = trend, colour = "Model"), 
+                      linewidth = 1) +
+            geom_line(data = sc_dec, 
+                      aes(y = trend_residue, colour = "Residue"), 
+                      linewidth = 1) 
         }
         else if (input$seeSeasonal == TRUE && input$seeTrend == FALSE) {
-          sc_plot <- sc_plot + geom_line(
-            data = sc_dec, 
-            aes(y = seasonal, color = "Model"), 
-            size = 1) +
-            geom_line(data= sc_dec, 
-                      aes(y=se_residue, colour = "Residue"), size = 1)
+          sc_plot <- sc_plot + 
+            geom_line(data = sc_dec, 
+                      aes(y = seasonal, color = "Model"), 
+                      linewidth = 1) +
+            geom_line(data = sc_dec, 
+                      aes(y = se_residue, colour = "Residue"), 
+                      linewidth = 1)
         }
         
         else if (input$seeTrend == TRUE && input$seeSeasonal == TRUE) {
-          sc_plot <- sc_plot + geom_line(data = sc_dec, 
-                                         aes(y = comb, color = "Model"), 
-                                         size = 1) +
-            geom_line(data= sc_dec, 
-                      aes(y=remainder, colour = "Residue"), size = 1)
+          sc_plot <- sc_plot + 
+            geom_line(data = sc_dec, 
+                      aes(y = comb, color = "Model"), 
+                      linewidth = 1) +
+            geom_line(data = sc_dec, 
+                      aes(y = remainder, colour = "Residue"), 
+                      linewidth = 1)
         }
+        
         sc_plot
       },
       alt = {if (input$seeTrend == FALSE && input$seeSeasonal == FALSE) {
@@ -682,7 +739,8 @@ server <- function(input, output, session) {
         }
         else if (input$seeSeasonal == TRUE && input$seeTrend == FALSE) {
           "This is the time series decomposition plot of the State College Weather 
-        with time on the x-axis, and temperature on the y-axis, and showing the seasonality of the plot."
+        with time on the x-axis, and temperature on the y-axis, and showing the 
+          seasonality of the plot."
         }
         else if (input$seeTrend == TRUE && input$seeSeasonal == TRUE) {
           "This is the time series decomposition plot of the State College Weather 
@@ -693,7 +751,7 @@ server <- function(input, output, session) {
     }
     
     ### GDP growth rate of US ----
-    else if (input$dataset == "GDP growth rate of U.S."){
+    else if (input$dataset == "GDP growth rate of U.S.") {
       sc <- read.csv(file = "gdp.csv")
       time = sc[[1]]
       gdp = sc[[2]]
@@ -705,46 +763,50 @@ server <- function(input, output, session) {
       
       output$timeseriesplot <- renderPlot(
         expr = {
-        
         gdp_plot <- ggplot(gdp_dec, aes(Index)) +
           labs(title = "Time Series Decomposition of the U.S. GDP Growth Rate",
                x = "Time", y = "GDP Growth Rate") +
           geom_line(data = gdp_dec, 
-                    aes(y = Data, color = "Original Series"),size = 1) +
+                    aes(y = Data, color = "Original Series"),
+                    linewidth = 1) +
           scale_color_manual(
             name = "Components",
             values = c(
               "Original Series" = boastUtils::psuPalette[3],
               "Model" = boastUtils::psuPalette[1],
-              "Residue" = boastUtils::boastPalette[2]
-            )
-          )+
-          theme(
-            text = element_text(size = 16)
-          )
+              "Residue" = boastUtils::boastPalette[2])
+          ) +
+          theme(text = element_text(size = 16))
+        
         if (input$seeTrend == TRUE && input$seeSeasonal == FALSE) {
-          gdp_plot <- gdp_plot + geom_line(data = gdp_dec, 
-                                           aes(y = trend, colour = "Model"), 
-                                           size = 1) +
-            geom_line(data= gdp_dec, 
-                      aes(y=trend_residue, colour = "Residue"), size = 1) 
+          gdp_plot <- gdp_plot + 
+            geom_line(data = gdp_dec, 
+                      aes(y = trend, colour = "Model"), 
+                      linewidth = 1) +
+            geom_line(data = gdp_dec, 
+                      aes(y = trend_residue, colour = "Residue"), 
+                      linewidth = 1) 
         }
         else if (input$seeSeasonal == TRUE && input$seeTrend == FALSE) {
-          gdp_plot <- gdp_plot + geom_line(
-            data = gdp_dec, 
-            aes(y = seasonal, color = "Model"), 
-            size = 1) +
-            geom_line(data= gdp_dec, 
-                      aes(y=se_residue, colour = "Residue"), size = 1)
+          gdp_plot <- gdp_plot + 
+            geom_line(data = gdp_dec, 
+                      aes(y = seasonal, color = "Model"), 
+                      linewidth = 1) +
+            geom_line(data = gdp_dec, 
+                      aes(y = se_residue, colour = "Residue"), 
+                      linewidth = 1)
         }
         
         else if (input$seeTrend == TRUE && input$seeSeasonal == TRUE) {
-          gdp_plot <- gdp_plot + geom_line(data = gdp_dec, 
-                                           aes(y = comb, color = "Model"), 
-                                           size = 1) +
-            geom_line(data= gdp_dec, 
-                      aes(y=remainder, colour = "Residue"), size = 1)
+          gdp_plot <- gdp_plot + 
+            geom_line(data = gdp_dec, 
+                      aes(y = comb, color = "Model"), 
+                      linewidth = 1) +
+            geom_line(data = gdp_dec, 
+                      aes(y = remainder, colour = "Residue"), 
+                      linewidth = 1)
         }
+        
         gdp_plot
         
       },
@@ -758,7 +820,8 @@ server <- function(input, output, session) {
         }
         else if (input$seeSeasonal == TRUE && input$seeTrend == FALSE) {
           "This is the time series decomposition plot of the U.S. GDP Growth rate
-        with time on the x-axis, and GDP growth rate on the y-axis, and showing the seasonality of the plot."
+        with time on the x-axis, and GDP growth rate on the y-axis, and showing 
+          the seasonality of the plot."
         }
         else if (input$seeTrend == TRUE && input$seeSeasonal == TRUE) {
           "This is the time series decomposition plot of the U.S. GDP Growth rate
@@ -788,7 +851,7 @@ server <- function(input, output, session) {
         the US from 1988 to 2018"
       )
       
-      output$dataDesc<- renderUI(datasetDesc)
+      output$dataDesc <- renderUI(datasetDesc)
     }
   )
   
@@ -800,7 +863,7 @@ server <- function(input, output, session) {
   observeEvent(
     input$simulation,{
       
-      if (input$simulation == "single process"){
+      if (input$simulation == "single process") {
         updateSliderInput(session, "random", value = 0)
         updateSliderInput(session, "trend", value = 0)
         updateSliderInput(session, "season", value = 0)
@@ -810,26 +873,33 @@ server <- function(input, output, session) {
             input$trend
             input$season}, {
               x <- input$random
-              t = c(1: 50)
+              t = c(1:50)
               
               f <- input$season
               temp = 45
               
-              error.model = function(x){rnorm(n = 50, sd=x, mean=0)}
+              error.model = function(x){rnorm(n = 50, sd = x, mean = 0)}
               
               set.seed(temp)
               
-              y.sim = arima.sim(n = 50, list(ar = c(0.5), ma = c(0.5)), rand.gen = error.model)
-              if (input$season == 0 & input$random == 0){
+              y.sim = arima.sim(n = 50, list(ar = c(0.5), 
+                                             ma = c(0.5)), 
+                                rand.gen = error.model)
+              if (input$season == 0 & input$random == 0) {
                 y.sim2 = input$trend * t}
               else{
-                y.sim2 = input$trend * t + y.sim + rnorm(n = 50, sd=x, mean=0) + f*cos(12*t)}
+                y.sim2 = input$trend * t + y.sim + 
+                  rnorm(n = 50, sd = x, mean = 0) + 
+                  f*cos(12*t)}
               
               
               
             }
         )
-        output$simplot <- renderPlot(plot.ts(y.sim2(), ylab = "value", col = rgb(191, 116, 224, maxColorValue = 255), lwd = 2))
+        output$simplot <- renderPlot(plot.ts(y.sim2(), 
+                                             ylab = "value", 
+                                             col = rgb(191, 116, 224, maxColorValue = 255), 
+                                             lwd = 2))
         
         observeEvent(input$newpro, {
           test <- sample(1:40, 1)
@@ -843,24 +913,31 @@ server <- function(input, output, session) {
               input$trend
               input$season}, {
                 x <- input$random
-                t = c(1: 50)
+                t = c(1:50)
                 
                 f <- input$season
                 set.seed(test)
-                error.model = function(x){rnorm(n = 50, sd=x, mean=0)}
-                y.sim = arima.sim(n = 50, list(ar = c(0.5), ma = c(0.5)), rand.gen = error.model)
-                if (input$season == 0 & input$random == 0){
+                error.model = function(x){rnorm(n = 50, sd = x, mean = 0)}
+                y.sim = arima.sim(n = 50, list(ar = c(0.5),
+                                               ma = c(0.5)),
+                                  rand.gen = error.model)
+                if (input$season == 0 & input$random == 0) {
                   y.sim2 = input$trend * t}
                 else{
-                  y.sim2 = input$trend * t + y.sim + rnorm(n = 50, sd=x, mean=0) + f*cos(12*t)}
-                
+                  y.sim2 = input$trend * t + y.sim + 
+                    rnorm(n = 50, sd = x, mean = 0) + 
+                    f*cos(12*t)}
                 
               }
           )
-          output$simplot <- renderPlot(plot.ts(y.sim2(), ylab = "value", col = rgb(191, 116, 224, maxColorValue = 255), lwd = 2))
+          output$simplot <- renderPlot(plot.ts(y.sim2(), 
+                                               ylab = "value", 
+                                               col = rgb(191, 116, 224, 
+                                                         maxColorValue = 255), 
+                                               lwd = 2))
         })
       }
-      else if (input$simulation == "multiple processes"){
+      else if (input$simulation == "multiple processes") {
         updateSliderInput(session, "random", value = 0)
         updateSliderInput(session, "trend", value = 0)
         updateSliderInput(session, "season", value = 0)
@@ -870,45 +947,48 @@ server <- function(input, output, session) {
           input$trend
           input$season},{
             x <- input$random
-            t = c(1: 50)
+            t = c(1:50)
             f <- input$season
-            error.model = function(x){rnorm(n = 50, sd=x, mean=0)}
-            a = arima.sim(n = 50, list(ar = c(0.5), ma = c(0.5)), rand.gen = error.model)
-            if (input$season == 0 & input$random == 0){
+            error.model = function(x){rnorm(n = 50, sd = x, mean = 0)}
+            a = arima.sim(n = 50, list(ar = c(0.5), 
+                                       ma = c(0.5)), 
+                          rand.gen = error.model)
+            if (input$season == 0 & input$random == 0) {
               a1 = input$trend * t}
             else{
-              a1 = input$trend * t + a + rnorm(n = 50, sd=x, mean=0) + f*cos(12*t)}
-            #a1 = input$trend * t + a + rnorm(n = 50, sd=x, mean=0) + f*cos(12*t)
+              a1 = input$trend * t + a + rnorm(n = 50, sd = x, mean = 0) + f*cos(12*t)}
           })
         b1 <- eventReactive({
           input$random
           input$trend
           input$season},{
             x <- input$random
-            t = c(1: 50)
+            t = c(1:50)
             f <- input$season
-            error.model = function(x){rnorm(n = 50, sd=x, mean=0)}
-            b = arima.sim(n = 50, list(ar = c(0.5), ma = c(0.5)), rand.gen = error.model)
-            if (input$season == 0 & input$random == 0){
+            error.model = function(x){rnorm(n = 50, sd = x, mean = 0)}
+            b = arima.sim(n = 50, list(ar = c(0.5), 
+                                       ma = c(0.5)), 
+                          rand.gen = error.model)
+            if (input$season == 0 & input$random == 0) {
               b1 = input$trend * t}
             else{
-              b1 = input$trend * t + b + rnorm(n = 50, sd=x, mean=0) + f*cos(12*t)}
-            #b1 = input$trend * t + b + rnorm(n = 50, sd=x, mean=0) + f*cos(12*t)
+              b1 = input$trend * t + b + rnorm(n = 50, sd = x, mean = 0) + f*cos(12*t)}
           })
         c1 <- eventReactive({
           input$random
           input$trend
           input$season},{
             x <- input$random
-            t = c(1: 50)
+            t = c(1:50)
             f <- input$season
-            error.model = function(x){rnorm(n = 50, sd=x, mean=0)}
-            c = arima.sim(n = 50, list(ar = c(0.5), ma = c(0.5)), rand.gen = error.model)
-            if (input$season == 0 & input$random == 0){
+            error.model = function(x){rnorm(n = 50, sd = x, mean = 0)}
+            c = arima.sim(n = 50, list(ar = c(0.5), 
+                                       ma = c(0.5)), 
+                          rand.gen = error.model)
+            if (input$season == 0 & input$random == 0) {
               c1 = input$trend * t}
             else{
-              c1 = input$trend * t + c + rnorm(n = 50, sd=x, mean=0) + f*cos(12*t)}
-            #c1 = input$trend * t + c + rnorm(n = 50, sd=x, mean=0) + f*cos(12*t)
+              c1 = input$trend * t + c + rnorm(n = 50, sd = x, mean = 0) + f*cos(12*t)}
             
           })
         
@@ -917,23 +997,52 @@ server <- function(input, output, session) {
           {input$path
             input$season
             input$random}, {
-              if (input$path == 1){
-                output$simplot <- renderPlot(ts.plot(a1(), ylab = "value", lwd = 2, col = rgb(191, 116, 224, maxColorValue = 255)))
+              if (input$path == 1) {
+                output$simplot <- renderPlot(ts.plot(a1(), 
+                                                     ylab = "value", 
+                                                     lwd = 2, 
+                                                     col = rgb(191, 116, 224, 
+                                                               maxColorValue = 255)))
               }
-              else if (input$path == 2){
-                if (input$season == 0 & input$random == 0){
-                  output$simplot <- renderPlot(ts.plot(b1(), ylab = "value", lwd = 2, col = rgb(99, 235, 235, maxColorValue = 255)))
+              else if (input$path == 2) {
+                if (input$season == 0 & input$random == 0) {
+                  output$simplot <- renderPlot(ts.plot(b1(), 
+                                                       ylab = "value", 
+                                                       lwd = 2, 
+                                                       col = rgb(99, 235, 235, 
+                                                                 maxColorValue = 255)))
                 }
                 else{
-                  output$simplot <- renderPlot(ts.plot(a1(), b1(), ylab = "value", lwd = 2, gpars = list(col = c(rgb(191, 116, 224, maxColorValue = 255), rgb(99, 235, 235, maxColorValue = 255)))))
+                  output$simplot <- renderPlot(ts.plot(a1(), 
+                                                       b1(), 
+                                                       ylab = "value", 
+                                                       lwd = 2, 
+                                                       gpars = list(col = c(rgb(191, 116, 224,
+                                                                                maxColorValue = 255), 
+                                                                            rgb(99, 235, 235,
+                                                                          maxColorValue = 255)))))
                 }
               }
-              else if (input$path == 3){
-                if (input$season == 0 & input$random == 0){
-                  output$simplot <- renderPlot(ts.plot(c1(), ylab = "value", lwd = 2, col = rgb(255, 105, 180, maxColorValue = 255)))
+              else if (input$path == 3) {
+                if (input$season == 0 & input$random == 0) {
+                  output$simplot <- renderPlot(ts.plot(c1(), 
+                                                       ylab = "value", 
+                                                       lwd = 2, 
+                                                       col = rgb(255, 105, 180, 
+                                                                 maxColorValue = 255)))
                 }
                 else{
-                  output$simplot <- renderPlot(ts.plot(a1(), b1(), c1(), ylab = "value", lwd = 2, gpars = list(col = c(rgb(191, 116, 224, maxColorValue = 255), rgb(99, 235, 235, maxColorValue = 255), rgb(255, 105, 180, maxColorValue = 255)))))
+                  output$simplot <- renderPlot(ts.plot(a1(),
+                                                       b1(),
+                                                       c1(), 
+                                                       ylab = "value", 
+                                                       lwd = 2, 
+                                                       gpars = list(col = c(rgb(191, 116, 224, 
+                                                                                maxColorValue = 255), 
+                                                                            rgb(99, 235, 235, 
+                                                                                maxColorValue = 255), 
+                                                                            rgb(255, 105, 180, 
+                                                                                maxColorValue = 255)))))
                 }
               }
             })
@@ -947,7 +1056,7 @@ server <- function(input, output, session) {
   
   
   ##Generate challenges ---- 
-  c <- reactiveValues(right=c(sample(1:11,1)))
+  c <- reactiveValues(right = c(sample(1:11,1)))
   
   ### Neil Changes
   ### Get new challenge and reset feedback ----
@@ -996,135 +1105,147 @@ server <- function(input, output, session) {
         "Choose the plot of seasonality of the following time series plot"
       )
       output$questionDisplayed <- renderUI(questionout)
+      output$sumbit <- renderIcon()
     }
   )
   
   
-  output$question1<- renderText({
-    if (c$right == 1){
-      "Challenge: please choose the plot of long term trend of the following time series plot"
+  output$question1<- renderText( {
+    if (c$right == 1) {
+      "Challenge: please choose the plot of long term trend of the following time 
+      series plot"
     }
-    else if (c$right == 2){
-      "Challenge: please choose the plot of seasonality of the following time series plot"
+    else if (c$right == 2) {
+      "Challenge: please choose the plot of seasonality of the following time series 
+      plot"
     }
-    else if (c$right == 3){
-      "Challenge: please choose the corresponding time series plot based on the following decomposed plots"
+    else if (c$right == 3) {
+      "Challenge: please choose the corresponding time series plot based on the 
+      following decomposed plots"
     }
-    else if (c$right == 4){
-      "Challenge: please choose the plot of long term trend of the following time series plot"
+    else if (c$right == 4) {
+      "Challenge: please choose the plot of long term trend of the following time 
+      series plot"
     }
-    else if (c$right == 5){
-      "Challenge: please choose the plot of seasonality of the following time series plot"
+    else if (c$right == 5) {
+      "Challenge: please choose the plot of seasonality of the following time series 
+      plot"
     }
-    else if (c$right == 6){
-      "Challenge: please choose the corresponding time series plot based on the following decomposed plots"
+    else if (c$right == 6) {
+      "Challenge: please choose the corresponding time series plot based on the 
+      following decomposed plots"
     }
-    else if (c$right == 7){
-      "Challenge: please choose the plot of long term trend of the following time series plot"
+    else if (c$right == 7) {
+      "Challenge: please choose the plot of long term trend of the following time 
+      series plot"
     }
-    else if (c$right == 8){
-      "Challenge: please choose the plot of long term trend of the following time series plot"
+    else if (c$right == 8) {
+      "Challenge: please choose the plot of long term trend of the following time 
+      series plot"
     }
-    else if (c$right == 9){
-      "Challenge: please choose the corresponding time series plot based on the following decomposed plots"
+    else if (c$right == 9) { 
+      "Challenge: please choose the corresponding time series plot based on the 
+      following decomposed plots"
     }
-    else if (c$right == 10){
-      "Challenge: please choose the corresponding time series plot based on the following decomposed plots"
+    else if (c$right == 10) {
+      "Challenge: please choose the corresponding time series plot based on the 
+      following decomposed plots"
     }
-    else if (c$right == 11){
-      "Challenge: please choose the plot of seasonality of the following time series plot"
+    else if (c$right == 11) {
+      "Challenge: please choose the plot of seasonality of the following time series
+      plot"
     }
   })
   
   output$questiongraph <- renderImage({
-    if (c$right == 1){
+    if (c$right == 1) {
       return(list(
         src = "q1.jpg"))
     }
-    else if (c$right == 2){
+    else if (c$right == 2) {
       return(list(
         src = "q2.jpg"))
     }
-    else if (c$right == 3){
+    else if (c$right == 3) {
       return(list(
         src = "q3.jpg"))
     }
-    else if (c$right == 4){
+    else if (c$right == 4) {
       return(list(
         src = "q4.jpg"))
     }
-    else if (c$right == 5){
+    else if (c$right == 5) {
       return(list(
         src = "q5.jpg"))
     }
-    else if (c$right == 6){
+    else if (c$right == 6) {
       return(list(
         src = "q6.jpg"))
     }
-    else if (c$right == 7){
+    else if (c$right == 7) {
       return(list(
         src = "q7.jpg"))
     }
-    else if (c$right == 8){
+    else if (c$right == 8) {
       return(list(
         src = "q8.jpg"))
     }
-    else if (c$right == 9){
+    else if (c$right == 9) {
       return(list(
         src = "q9.jpg"))
     }
-    else if (c$right == 10){
+    else if (c$right == 10) {
       return(list(
         src = "q10.jpg"))
     }
-    else if (c$right == 11){
+    else if (c$right == 11) {
       return(list(
         src = "q11.jpg"))
     }
   }, deleteFile = FALSE)
   
   output$choice1 <- renderImage({
-    if (c$right == 1){
+    if (c$right == 1) {
       return(list(
         src = "answer1a.jpg"))
     }
-    else if (c$right == 2){
+    else if (c$right == 2) {
       return(list(
         src = "answer2a.jpg"))
     }
-    else if (c$right == 3){
+    else if (c$right == 3) {
       return(list(
         src = "answer3a.jpg"))
     }
-    else if (c$right == 4){
+    else if (c$right == 4) {
       return(list(
         src = "answer4a.jpg"))
     }
-    else if (c$right == 5){
+    else if (c$right == 5) {
       return(list(
         src = "answer5a.jpg"))
-    }
-    else if (c$right == 6){
+    } 
+    else if (c$right == 6) {
       return(list(
         src = "answer6a.jpg"))
     }
-    else if (c$right == 7){
+    else if (c$right == 7) {
       return(list(
         src = "answer7a.jpg"))
     }
-    else if (c$right == 8){
+    else if (c$right == 8) {
       return(list(
         src = "answer8a.jpg"))
     }
-    else if (c$right == 9){
+    else if (c$right == 9) {
       return(list(
         src = "answer9a.jpg"))
     }
-    else if (c$right == 10){
+    else if (c$right == 10) {
       return(list(
         src = "answer10a.jpg"))
     }
-    else if (c$right == 11){
+    else if (c$right == 11) {
       return(list(
         src = "answer11a.jpg"))
     }
@@ -1132,102 +1253,104 @@ server <- function(input, output, session) {
   
   
   output$choice2 <- renderImage({
-    if (c$right == 1){
+    if (c$right == 1) {
       return(list(
         src = "answer1b.jpg"))
     }
-    else if (c$right == 2){
+    else if (c$right == 2) {
       return(list(
         src = "answer2b.jpg"))
     }
-    else if (c$right == 3){
+    else if (c$right == 3) {
       return(list(
         src = "answer3b.jpg"))
     }
-    else if (c$right == 4){
+    else if (c$right == 4) {
       return(list(
         src = "answer4b.jpg"))
     }
-    else if (c$right == 5){
+    else if (c$right == 5) {
       return(list(
         src = "answer5b.jpg"))
     }
-    else if (c$right == 6){
+    else if (c$right == 6) {
       return(list(
         src = "answer6b.jpg"))
     }
-    else if (c$right == 7){
+    else if (c$right == 7) {
       return(list(
         src = "answer7b.jpg"))
     }
-    else if (c$right == 8){
+    else if (c$right == 8) {
       return(list(
         src = "answer8b.jpg"))
     }
-    else if (c$right == 9){
+    else if (c$right == 9) {
       return(list(
         src = "answer9b.jpg"))
     }
-    else if (c$right == 10){
+    else if (c$right == 10) {
       return(list(
         src = "answer10b.jpg"))
     }
-    else if (c$right == 11){
+    else if (c$right == 11) {
       return(list(
         src = "answer11b.jpg"))
     }
   }, deleteFile = FALSE)
   
   output$choice3 <- renderImage({
-    if (c$right == 1){
+    if (c$right == 1) {
       return(list(
         src = "answer1c.jpg"))
     }
-    else if (c$right == 2){
+    else if (c$right == 2) {
       return(list(
         src = "answer2c.jpg"))
     }
-    else if (c$right == 3){
+    else if (c$right == 3) {
       return(list(
         src = "answer3c.jpg"))
     }
-    else if (c$right == 4){
+    else if (c$right == 4) {
       return(list(
         src = "answer4c.jpg"))
     }
-    else if (c$right == 5){
+    else if (c$right == 5) {
       return(list(
         src = "answer5c.jpg"))
     }
-    else if (c$right == 6){
+    else if (c$right == 6) {
       return(list(
         src = "answer6c.jpg"))
     }
-    else if (c$right == 7){
+    else if (c$right == 7) {
       return(list(
         src = "answer7c.jpg"))
     }
-    else if (c$right == 8){
+    else if (c$right == 8) {
       return(list(
         src = "answer8c.jpg"))
     }
-    else if (c$right == 9){
+    else if (c$right == 9) {
       return(list(
         src = "answer9c.jpg"))
     }
-    else if (c$right == 10){
+    else if (c$right == 10) {
       return(list(
         src = "answer10c.jpg"))
     }
-    else if (c$right == 11){
+    else if (c$right == 11) {
       return(list(
         src = "answer11c.jpg"))
     }
   }, deleteFile = FALSE)
 
-  
-  observeEvent(input$submit, {
-    correct <- (((c$right == 1) && (input$answer == "C")) ||
+  observeEvent(
+    eventExpr = input$submit, 
+    handlerExp = {
+      
+      correct <- (((c$right == 1) && (input$answer == "C")) ||
                    ((c$right == 2) && (input$answer == "C")) ||
                    ((c$right == 3) && (input$answer == "A")) ||
                    ((c$right == 4) && (input$answer == "B")) ||
@@ -1238,63 +1361,40 @@ server <- function(input, output, session) {
                    ((c$right == 9) && (input$answer == "A")) ||
                    ((c$right == 10) && (input$answer == "B")) ||
                    ((c$right == 11) && (input$answer == "B")))
+      hint1 <- (((c$right == 1) & (input$answer == "B")) ||
+                  ((c$right == 3) & (input$answer == "C")) ||
+                  ((c$right == 4) & (input$answer == "A")) ||
+                  ((c$right == 6) & (input$answer == "A")) ||
+                  ((c$right == 7) & (input$answer == "A")) ||
+                  ((c$right == 7) & (input$answer == "B")) ||
+                  ((c$right == 8) & (input$answer == "A")) ||
+                  ((c$right == 9) & (input$answer == "C")) ||
+                  ((c$right == 10) & (input$answer == "C"))) 
+      hint2 <- (((c$right == 1) & (input$answer == "A")) ||
+                  ((c$right == 4) & (input$answer == "C")) ||
+                  ((c$right == 8) & (input$answer == "C")))
+      hint3 <- (((c$right == 3) & (input$answer == "B")) ||
+                  ((c$right == 6) & (input$answer == "C")) ||
+                  ((c$right == 9) & (input$answer == "B")) ||
+                  ((c$right == 10) & (input$answer == "A")))
     
     if (correct) {
       output$icon <- renderIcon(icon = "correct", width = 45) 
     } 
-    else {output$icon <- renderIcon(icon = "incorrect", width = 45)
-    }
+    else {output$icon <- renderIcon(icon = "incorrect", width = 45)}
     
-    output$response <- renderText({
-      if ((c$right == 1) & (input$answer == "B")){
-        "Hint: Is the trend going up or going down?"
-      }
-      else if ((c$right == 1) & (input$answer == "A")){
-        "Hint: Look at the scale"
-      }  
-      else if ((c$right == 3) & (input$answer == "B")){
-        "Hint: please double check the seasonality."
-      }
-      else if ((c$right == 3) & (input$answer == "C")){
-        "Hint: Is the trend going up or going down?"
-      }
-      else if ((c$right == 4) & (input$answer == "A")){
-        "Hint: Is the trend going up or going down?"
-      }
-      else if ((c$right == 4) & (input$answer == "C")){
-        "Hint: Look at the scale"
-      }
-      else if ((c$right == 6) & (input$answer == "A")){
-        "Hint: Is the trend going up or going down?"
-      }
-      else if ((c$right == 6) & (input$answer == "C")){
-        "Hint: please double check the seasonality."
-      }
-      else if ((c$right == 7) & (input$answer == "A")){
-        "Hint: Is the trend going up or going down?"
-      }
-      else if ((c$right == 7) & (input$answer == "B")){
-        "Hint: Is the trend going up or going down?"
-      }
-      else if ((c$right == 8) & (input$answer == "A")){
-        "Hint: Is the trend going up or going down?"
-      }
-      else if ((c$right == 8) & (input$answer == "C")){
-        "Hint: Look at the scale"
-      }  
-      else if ((c$right == 9) & (input$answer == "B")){
-        "Hint: please double check the seasonality."
-      }
-      else if ((c$right == 9) & (input$answer == "C")){
-        "Hint: Is the trend going up or going down?"
-      }   
-      else if ((c$right == 10) & (input$answer == "A")){
-        "Hint: please double check the seasonality."
-      }
-      else if ((c$right == 10) & (input$answer == "C")){
-        "Hint: Is the trend going up or going down?"
-      } 
-    })
+    if (hint1) {
+      output$response <- renderText("Hint: Is the trend going up or going down?")
+    }
+    else if (hint2) {
+      output$response <- renderText("Hint: Look at the scale.")
+    }  
+    else if (hint3) {
+      output$response <- renderText("Hint: please double check the seasonality.")
+    }
+    else {
+      output$response <- renderText("")
+    }
   })
 }
 
