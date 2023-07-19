@@ -9,6 +9,10 @@ library(ggfortify)
 library(ggplot2)
 library(zoo)
 
+# Define global constants and load question banks ----
+questionBank <- read.csv("questionBank.csv", header = TRUE)
+questionBank <- na.omit(questionBank)
+
 # Define UI for App ----
 
 ui <- list(
@@ -264,12 +268,12 @@ ui <- list(
             fluidRow(
               column(
                 width = 6,
-                imageOutput(outputId = "questiongraph") #, height = 250)
+                imageOutput(outputId = "extraOutput") #, height = 250)
               ),
               column(
                 width = 6,
                 wellPanel(
-                uiOutput(outputId = "questionDisplayed"),
+                uiOutput(outputId = "question"),
                 br(),
                 actionButton(
                   inputId = "newchallenge",
@@ -279,7 +283,7 @@ ui <- list(
                   ),
                 br(),
                 br(),
-                selectInput("answer", "Select your answer", 
+                selectInput("response", "Select your answer", 
                             choices = list("A", "B", "C", ""), 
                             selected = ""),
                 actionButton(
@@ -292,7 +296,7 @@ ui <- list(
                 br(),
                 uiOutput("icon"),
                 br(),
-                uiOutput("response")
+                uiOutput("answer")
               )
             )
           ),
@@ -1052,15 +1056,74 @@ server <- function(input, output, session) {
     updateTabItems(session, "pages", "challenge")
   })
   
+  ## Proposed Change: let's build a question bank (CSV) file and put key 
+  ## information there (prompt, images, alt text, hints, answers) so that we don't
+  ## have such things hard coded into the app
+  current_question <- reactiveVal()
   
-  ##Generate challenges ---- 
-  c <- reactiveValues(right = c(sample(1:11,1)))
+  # Function to randomly select a question from the questionBank dataset
+  random_question <- function() {
+    random_index <- sample(nrow(questionBank), 1)
+    current_question(questionBank[random_index, ])
+  }
+  
+  # Show the initial question when the app starts
+  random_question()
+  
+  output$question <- renderText({
+    current_question()$question
+  })
+  
+  output$extraOutput <- renderImage({
+    if (!is.null(current_question()$extraOutput) && nchar(current_question()$extraOutput) > 0) 
+      {
+      return(list(src = current_question()$extraOutput))
+    }
+  },
+  deleteFile = FALSE)
+  
+  output$choice1 <- renderImage({
+    if (!is.null(current_question()$choice1) && nchar(current_question()$choice1) > 0) 
+    {
+      return(list(src = current_question()$choice1))
+    }
+  },
+  deleteFile = FALSE)
+  
+  output$choice2 <- renderImage({
+    if (!is.null(current_question()$choice2) && nchar(current_question()$choice2) > 0) 
+    {
+      return(list(src = current_question()$choice2))
+    }
+  },
+  deleteFile = FALSE)
+  
+  output$choice3 <- renderImage({
+    if (!is.null(current_question()$choice3) && nchar(current_question()$choice3) > 0) 
+    {
+      return(list(src = current_question()$choice3))
+    }
+  },
+  deleteFile = FALSE)
+  
+  observeEvent(
+    eventExpr = input$submit, 
+    handlerExpr = {
+      user_answer <- input$response
+      correct_answer <- current_question()$answer
+    
+    if (user_answer == correct_answer) {
+      output$icon <- renderIcon("correct", width = 45)
+    } else {
+      output$icon <- renderIcon("incorrect", width = 45)
+    }
+  })
   
   ### Get new challenge and reset feedback ----
   observeEvent(
     eventExpr = input$newchallenge,
     handlerExpr = {
-      c$right <- sample(x = 1:11, size = 1)
+      random_question()
       
       updateSelectInput(
         session = session,
@@ -1074,180 +1137,6 @@ server <- function(input, output, session) {
     }
   )
   
-  ## Proposed Change: let's build a question bank (CSV) file and put key 
-  ## information there (prompt, images, alt text, hints, answers) so that we don't
-  ## have such things hard coded into the app
-  observeEvent(
-    eventExpr = c(input$newchallenge, c),
-    handlerExpr = {
-      questionout <- switch(
-        c$right,
-        "Choose the plot of seasonality of the 
-        following time series plot",
-        "Choose the plot of seasonality of the following 
-        time series plot",
-        "Choose the corresponding time series plot based 
-        on the following decomposed plots",
-        "Choose the plot of long term trend of the 
-        following time series plot",
-        "Choose the plot of seasonality of the following 
-        time series plot",
-        "Choose the corresponding time series plot based 
-        on the following decomposed plots",
-        "Choose the plot of long term trend of the following 
-        time series plot",
-        "Choose the plot of long term trend of the following time series 
-        plot",
-        "Choose the corresponding time series plot based 
-        on the following decomposed plots",
-        "Choose the corresponding time series plot based on the following 
-        decomposed plots",
-        "Choose the plot of seasonality of the following time series plot"
-      )
-      output$questionDisplayed <- renderUI(questionout)
-      output$sumbit <- renderIcon()
-    }
-  )
-  
-  
-  output$question1<- renderText( {
-    if (c$right == 1) {
-      "Challenge: please choose the plot of long term trend of the following time 
-      series plot"
-    }
-    else if (c$right == 2) {
-      "Challenge: please choose the plot of seasonality of the following time series 
-      plot"
-    }
-    else if (c$right == 3) {
-      "Challenge: please choose the corresponding time series plot based on the 
-      following decomposed plots"
-    }
-    else if (c$right == 4) {
-      "Challenge: please choose the plot of long term trend of the following time 
-      series plot"
-    }
-    else if (c$right == 5) {
-      "Challenge: please choose the plot of seasonality of the following time series 
-      plot"
-    }
-    else if (c$right == 6) {
-      "Challenge: please choose the corresponding time series plot based on the 
-      following decomposed plots"
-    }
-    else if (c$right == 7) {
-      "Challenge: please choose the plot of long term trend of the following time 
-      series plot"
-    }
-    else if (c$right == 8) {
-      "Challenge: please choose the plot of long term trend of the following time 
-      series plot"
-    }
-    else if (c$right == 9) { 
-      "Challenge: please choose the corresponding time series plot based on the 
-      following decomposed plots"
-    }
-    else if (c$right == 10) {
-      "Challenge: please choose the corresponding time series plot based on the 
-      following decomposed plots"
-    }
-    else if (c$right == 11) {
-      "Challenge: please choose the plot of seasonality of the following time series
-      plot"
-    }
-  })
-  
-  output$questiongraph <- renderImage(
-    expr = {
-      list(
-        src = paste0("www/q", c$right, ".jpg"),
-        alt = "This is alt text that needs to be updated!"
-      )
-    },
-    deleteFile = FALSE
-  )
-  
-  output$choice1 <- renderImage(
-    expr = {
-      list(
-        src = paste0("www/answer", c$right, "a.jpg"),
-        alt = "This is alt text that needs to be updated!"
-      )
-    },
-    deleteFile = FALSE
-  )
-  
-  
-  output$choice2 <- renderImage(
-    expr = {
-      list(
-        src = paste0("www/answer", c$right, "b.jpg"),
-        alt = "This is alt text that needs to be updated!"
-      )
-    },
-    deleteFile = FALSE
-  )
-  
-  output$choice3 <- renderImage(
-    expr = {
-      list(
-        src = paste0("www/answer", c$right, "c.jpg"),
-        alt = "This is alt text that needs to be updated!"
-      )
-    },
-    deleteFile = FALSE
-  )
-  
-  observeEvent(
-    eventExpr = input$submit, 
-    handlerExp = {
-      
-      correct <- (((c$right == 1) && (input$answer == "C")) ||
-                   ((c$right == 2) && (input$answer == "C")) ||
-                   ((c$right == 3) && (input$answer == "A")) ||
-                   ((c$right == 4) && (input$answer == "B")) ||
-                   ((c$right == 5) && (input$answer == "A")) ||
-                   ((c$right == 6) && (input$answer == "B")) ||
-                   ((c$right == 7) && (input$answer == "C")) ||
-                   ((c$right == 8) && (input$answer == "B")) ||
-                   ((c$right == 9) && (input$answer == "A")) ||
-                   ((c$right == 10) && (input$answer == "B")) ||
-                   ((c$right == 11) && (input$answer == "B")))
-      hint1 <- (((c$right == 1) & (input$answer == "B")) ||
-                  ((c$right == 3) & (input$answer == "C")) ||
-                  ((c$right == 4) & (input$answer == "A")) ||
-                  ((c$right == 6) & (input$answer == "A")) ||
-                  ((c$right == 7) & (input$answer == "A")) ||
-                  ((c$right == 7) & (input$answer == "B")) ||
-                  ((c$right == 8) & (input$answer == "A")) ||
-                  ((c$right == 9) & (input$answer == "C")) ||
-                  ((c$right == 10) & (input$answer == "C"))) 
-      hint2 <- (((c$right == 1) & (input$answer == "A")) ||
-                  ((c$right == 4) & (input$answer == "C")) ||
-                  ((c$right == 8) & (input$answer == "C")))
-      hint3 <- (((c$right == 3) & (input$answer == "B")) ||
-                  ((c$right == 6) & (input$answer == "C")) ||
-                  ((c$right == 9) & (input$answer == "B")) ||
-                  ((c$right == 10) & (input$answer == "A")))
-    
-    if (correct) {
-      output$icon <- renderIcon(icon = "correct", width = 45) 
-    } 
-    else {output$icon <- renderIcon(icon = "incorrect", width = 45)}
-    
-    if (hint1) {
-      output$response <- renderText("Hint: Is the trend going up or going down?")
-    }
-    else if (hint2) {
-      output$response <- renderText("Hint: Look at the scale.")
-    }  
-    else if (hint3) {
-      output$response <- renderText("Hint: please double check the seasonality.")
-    }
-    else {
-      output$response <- renderText("")
-    }
-  })
 }
 
 # Boast App Call ----
