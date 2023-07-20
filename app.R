@@ -265,52 +265,58 @@ ui <- list(
           h2("Challenge"),
           p("Test your understanding by trying out these questions."),
           br(),
-            fluidRow(
-              column(
-                width = 6,
-                imageOutput(outputId = "extraOutput") #, height = 250)
-              ),
-              column(
-                width = 6,
-                wellPanel(
-                uiOutput(outputId = "question"),
+          fluidRow(
+            column(
+              width = 7,
+              uiOutput(outputId = "questionPlot"),
+              # imageOutput(outputId = "extraOutput") #, height = 250)
+            ),
+            column(
+              width = 5,
+              wellPanel(
+                # uiOutput(outputId = "question"),
+                p("Review the three plots listed below and select the best one
+                  that matches the question listed below the question plot."),
                 br(),
-                actionButton(
-                  inputId = "newchallenge",
-                  label = "New Challenge",
-                  size = "small",
-                  style = "default"
-                  ),
-                br(),
-                br(),
-                selectInput("response", "Select your answer", 
-                            choices = list("A", "B", "C", ""), 
-                            selected = ""),
-                actionButton(
+                selectInput(
+                  inputId = "response",
+                  label = "Select your answer", 
+                  choices = list("A", "B", "C", ""), 
+                  selected = ""
+                ),
+                bsButton(
                   inputId = "submit",
                   label = "Submit",
-                  size = "small",
+                  size = "large",
                   style = "default"
                 ),
-                br(),
-                br(),
+                p("Feedback"),
                 uiOutput("icon"),
-                br(),
-                uiOutput("answer")
+                uiOutput("answer"),
+                bsButton(
+                  inputId = "newChallenge",
+                  label = "New Challenge",
+                  size = "large",
+                  style = "default"
+                )
               )
             )
           ),
-          wellPanel(
-            fluidRow(
-              column(
-                width = 4,
-                imageOutput("choice1", height = 250)),
-              column(
-                width = 4,
-                imageOutput("choice2", height = 250)),
-              column(
-                width = 4,
-                imageOutput("choice3", height = 250))
+          fluidRow(
+            column(
+              width = 4,
+              uiOutput("choiceA")
+              # imageOutput("choice1", height = 250)),
+            ),
+            column(
+              width = 4,
+              uiOutput("choiceB")
+              # imageOutput("choice2", height = 250)),
+            ),
+            column(
+              width = 4,
+              uiOutput("choiceC")
+              # imageOutput("choice3", height = 250))
             )
           )
         ),
@@ -1052,20 +1058,102 @@ server <- function(input, output, session) {
       }
     })
   
-  observeEvent(input$next2, {
-    updateTabItems(session, "pages", "challenge")
-  })
+  ## Challenge Page ----
   
   ## Proposed Change: let's build a question bank (CSV) file and put key 
   ## information there (prompt, images, alt text, hints, answers) so that we don't
   ## have such things hard coded into the app
+  
+  ### Create store of key elements for challenge page
+  challengeElements <- reactiveValues(
+    # Creates a vector of shuffled integers which we can use for the id column
+    promptIds = sample(1:nrow(questionBank), size = nrow(questionBank), replace = FALSE),
+    # Create current index
+    currentIndex = 1,
+    # Create a flag if current question has been answered
+    answered = FALSE,
+    # Create a flag for first visit to page
+    firstTime = TRUE
+  )
+  
+  ### Set watcher to iterate current question ----
+  observeEvent(
+    eventExpr = c(input$pages, input$newChallenge),
+    handlerExpr = {
+      if (input$pages == "challenge" & challengeElements$firstTime) {
+        challengeElements$firstTime <- FALSE
+      } else if (challengeElements$currentIndex == nrow(questionBank)) {
+        sendSweetAlert(
+          session = session,
+          type = "error",
+          title = "End of Game",
+          text = "You've played through all of the questions."
+        )
+      } else {
+        ## TO DO: Add commands to clear feedback first
+        challengeElements$currentIndex <- challengeElements$currentIndex + 1
+      }
+    }
+  )
+  
+  ### Display challenge plot and question ----
+  output$questionPlot <- renderUI(
+    expr = {
+      questionId <- challengeElements$promptIds[challengeElements$currentIndex]
+      tagList(
+        h3("Question Plot"),
+        HTML(questionBank$extraOutput[questionId]),
+        p(questionBank$question[questionId])
+      )
+    }
+  )
+  
+  ### Display answer choices ----
+  ##' TO DO: set up randomization so that the plots do not always appear in the 
+  ##' same order. This will also necessitate editing the pictures so as to not
+  ##' include "A", "B", and "C". We will also need to figure out how to track 
+  ##' the correct graph for scoring
+  output$choiceA <- renderUI(
+    expr = {
+      questionId <- challengeElements$promptIds[challengeElements$currentIndex]
+      tagList(
+        h4("Option A"),
+        HTML(questionBank$choice1[questionId])
+      )
+    }
+  )
+  
+  output$choiceB <- renderUI(
+    expr = {
+      questionId <- challengeElements$promptIds[challengeElements$currentIndex]
+      tagList(
+        h4("Option B"),
+        HTML(questionBank$choice2[questionId])
+      )
+    }
+  )
+  
+  output$choiceC <- renderUI(
+    expr = {
+      questionId <- challengeElements$promptIds[challengeElements$currentIndex]
+      tagList(
+        h4("Option C"),
+        HTML(questionBank$choice3[questionId])
+      )
+    }
+  )
+  
+  
+  
   current_question <- reactiveVal()
+  
   
   # Function to randomly select a question from the questionBank dataset
   random_question <- function() {
     random_index <- sample(nrow(questionBank), 1)
     current_question(questionBank[random_index, ])
   }
+  
   
   # Show the initial question when the app starts
   random_question()
@@ -1121,7 +1209,7 @@ server <- function(input, output, session) {
   
   ### Get new challenge and reset feedback ----
   observeEvent(
-    eventExpr = input$newchallenge,
+    eventExpr = input$newChallenge,
     handlerExpr = {
       random_question()
       
