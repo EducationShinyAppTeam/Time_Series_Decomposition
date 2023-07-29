@@ -99,7 +99,7 @@ ui <- list(
             boastUtils::citeApp(),
             br(),
             br(),
-            div(class = "updated",  "Last Update: 06/23/2023 by LJE.")
+            div(class = "updated",  "Last Update: 07/20/2023 by LJE.")
           )
         ),
         ### Set up the Prerequisites Page ----
@@ -264,7 +264,6 @@ ui <- list(
           tabName = "challenge",
           h2("Challenge"),
           p("Test your understanding by trying out these questions."),
-          br(),
           fluidRow(
             column(
               width = 7,
@@ -290,8 +289,11 @@ ui <- list(
                   size = "large",
                   style = "default"
                 ),
+                br(),
+                br(),
                 p("Feedback"),
                 uiOutput("icon"),
+                verbatimTextOutput("score"),
                 uiOutput("answer"),
                 bsButton(
                   inputId = "newChallenge",
@@ -305,16 +307,19 @@ ui <- list(
           fluidRow(
             column(
               width = 4,
+              h4("option A"),
               uiOutput("choiceA")
               # imageOutput("choice1", height = 250)),
             ),
             column(
               width = 4,
+              h4("option B"),
               uiOutput("choiceB")
               # imageOutput("choice2", height = 250)),
             ),
             column(
               width = 4,
+              h4("option C"),
               uiOutput("choiceC")
               # imageOutput("choice3", height = 250))
             )
@@ -1097,6 +1102,8 @@ server <- function(input, output, session) {
   )
   
   ### Display challenge plot and question ----
+  scoreLevel <- reactiveVal(0)
+  
   output$questionPlot <- renderUI(
     expr = {
       questionId <- challengeElements$promptIds[challengeElements$currentIndex]
@@ -1113,49 +1120,51 @@ server <- function(input, output, session) {
   ##' same order. This will also necessitate editing the pictures so as to not
   ##' include "A", "B", and "C". We will also need to figure out how to track 
   ##' the correct graph for scoring
-  output$choiceA <- renderUI(
-    expr = {
-      questionId <- challengeElements$promptIds[challengeElements$currentIndex]
-      tagList(
-        h4("Option A"),
-        HTML(questionBank$choice1[questionId])
-      )
-    }
-  )
   
-  output$choiceB <- renderUI(
-    expr = {
-      questionId <- challengeElements$promptIds[challengeElements$currentIndex]
-      tagList(
-        h4("Option B"),
-        HTML(questionBank$choice2[questionId])
-      )
-    }
-  )
+  random_order <- reactiveVal()
   
-  output$choiceC <- renderUI(
-    expr = {
+  random_choice <- function() {
+    choices <- c("1", "2", "3")
+    random_order <- sample(choices)
+    return(random_order)
+  }
+  
+  random_choice()
+  
+  observe({
+    random_order_val <- random_order()
+    
+    output$choiceA <- renderUI({
       questionId <- challengeElements$promptIds[challengeElements$currentIndex]
       tagList(
-        h4("Option C"),
-        HTML(questionBank$choice3[questionId])
+        HTML(questionBank[[paste0("A")]][questionId])
       )
-    }
-  )
+    })
+    
+    output$choiceB <- renderUI({
+      questionId <- challengeElements$promptIds[challengeElements$currentIndex]
+      tagList(
+        HTML(questionBank[[paste0("B")]][questionId])
+      )
+    })
+    
+    output$choiceC <- renderUI({
+      questionId <- challengeElements$promptIds[challengeElements$currentIndex]
+      tagList(
+        HTML(questionBank[[paste0("C")]][questionId])
+      )
+    })
+  })
   
   
   
   current_question <- reactiveVal()
   
-  
-  # Function to randomly select a question from the questionBank dataset
   random_question <- function() {
     random_index <- sample(nrow(questionBank), 1)
     current_question(questionBank[random_index, ])
   }
   
-  
-  # Show the initial question when the app starts
   random_question()
   
   output$question <- renderText({
@@ -1170,26 +1179,26 @@ server <- function(input, output, session) {
   },
   deleteFile = FALSE)
   
-  output$choice1 <- renderImage({
-    if (!is.null(current_question()$choice1) && nchar(current_question()$choice1) > 0) 
+  output$A <- renderImage({
+    if (!is.null(current_question()$A) && nchar(current_question()$A) > 0) 
     {
-      return(list(src = current_question()$choice1))
+      return(list(src = current_question()$A))
     }
   },
   deleteFile = FALSE)
   
-  output$choice2 <- renderImage({
-    if (!is.null(current_question()$choice2) && nchar(current_question()$choice2) > 0) 
+  output$B <- renderImage({
+    if (!is.null(current_question()$B) && nchar(current_question()$B) > 0) 
     {
-      return(list(src = current_question()$choice2))
+      return(list(src = current_question()$B))
     }
   },
   deleteFile = FALSE)
   
-  output$choice3 <- renderImage({
-    if (!is.null(current_question()$choice3) && nchar(current_question()$choice3) > 0) 
+  output$C <- renderImage({
+    if (!is.null(current_question()$C) && nchar(current_question()$C) > 0) 
     {
-      return(list(src = current_question()$choice3))
+      return(list(src = current_question()$C))
     }
   },
   deleteFile = FALSE)
@@ -1199,19 +1208,37 @@ server <- function(input, output, session) {
     handlerExpr = {
       user_answer <- input$response
       correct_answer <- current_question()$answer
-    
-    if (user_answer == correct_answer) {
-      output$icon <- renderIcon("correct", width = 45)
-    } else {
-      output$icon <- renderIcon("incorrect", width = 45)
+      
+      
+      if (user_answer == correct_answer) {
+        scoreLevel(scoreLevel() + 1)
+        output$icon <- renderIcon("correct", width = 45)
+      } else {
+        scoreLevel(scoreLevel() + 0)
+        output$icon <- renderIcon("incorrect", width = 45)
+      }
+      output$score <- renderText(
+        expr = {
+          paste("Total", scoreLevel(), "points.")
+        }
+      )
     }
-  })
+  )
+
+  ### Scoring ----
+  output$scoreA <- renderText(
+    expr = {
+      paste("You have", scoreLevelA(), "points.")
+    }
+  )
   
   ### Get new challenge and reset feedback ----
   observeEvent(
     eventExpr = input$newChallenge,
     handlerExpr = {
+      random_choice()
       random_question()
+      scoreLevel()
       
       updateSelectInput(
         session = session,
@@ -1220,8 +1247,8 @@ server <- function(input, output, session) {
       )
       
       output$icon <- renderIcon()
-      
       output$response <- renderUI(NULL)
+      
     }
   )
   
