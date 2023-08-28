@@ -65,7 +65,7 @@ ui <- list(
           h1("Time Series Decomposition"),
           br(),
           p("This application is to help you better understand long term trend, 
-            seasonality,  and random components of time series plot."),
+            seasonality,  and random components of time series plots."),
           h2("Instructions"),
           tags$ol(
             tags$li("You can explore time series plots for several different datasets 
@@ -149,7 +149,7 @@ ui <- list(
                   label = "Dataset",
                   choices = c(
                     "Ford Stock Price", "Unemployment Rate", 
-                    "S&P 500", "State College Weather", 
+                    "S&P 500", "State College Temperature", 
                     "GDP growth rate of U.S." ),
                   selected = "Ford Stock Price"
                 ),
@@ -538,9 +538,8 @@ server <- function(input, output, session) {
           geom_line(data = unr_dec, 
                     aes(y = Data, color = "Original Series"),
                     linewidth = 1) +
-          labs(title = "Time Series Decomposition of the Unemployment Rate 
-                 in the US",
-               x = "Time", y = "Price ($)") +
+          labs(title = "Time Series Decomposition of the Unemployment Rate in the US",
+               x = "Time", y = "Unempolyment Rate (%)") +
           scale_color_manual(name = "Components",
                              values = c(
                                "Original Series" = boastUtils::psuPalette[3],
@@ -683,8 +682,8 @@ server <- function(input, output, session) {
       })
     }
     
-    ### SC weather ----
-    else if (input$dataset == "State College Weather") {
+    ### SC temp ----
+    else if (input$dataset == "State College Temperature") {
       sc <- read.csv(file = "StateCollegeWeather.csv")
       time = sc[[1]]
       temp = sc[[2]]
@@ -698,8 +697,8 @@ server <- function(input, output, session) {
       output$timeseriesplot <- renderPlot(
         expr = {
         sc_plot <- ggplot(sc_dec, aes(Index)) +
-          labs(title = "Time Series Decomposition of State College Weather",
-               x = "Time", y = "Temperature") +
+          labs(title = "Time Series Decomposition of State College Temperature",
+               x = "Time", y = "Temperature (\u00B0F)") +
           geom_line(data = sc_dec, 
                     aes(y = Data, color = "Original Series"),
                     linewidth = 1) +
@@ -743,20 +742,20 @@ server <- function(input, output, session) {
         sc_plot
       },
       alt = {if (input$seeTrend == FALSE && input$seeSeasonal == FALSE) {
-        "This is the time series decomposition plot of the State College Weather 
+        "This is the time series decomposition plot of the State College Temperature 
         with time on the x-axis, and temperature on the y-axis." }
         else if (input$seeTrend == TRUE && input$seeSeasonal == FALSE) {
-          "This is the time series decomposition plot of the State College Weather 
+          "This is the time series decomposition plot of the State College Temperature 
         with time on the x-axis, and temperature on the y-axis, and showing the 
           trend of the plot."
         }
         else if (input$seeSeasonal == TRUE && input$seeTrend == FALSE) {
-          "This is the time series decomposition plot of the State College Weather 
+          "This is the time series decomposition plot of the State College Temperature 
         with time on the x-axis, and temperature on the y-axis, and showing the 
           seasonality of the plot."
         }
         else if (input$seeTrend == TRUE && input$seeSeasonal == TRUE) {
-          "This is the time series decomposition plot of the State College Weather 
+          "This is the time series decomposition plot of the State College Temperature 
         with time on the x-axis, and temperature on the y-axis, and showing both 
           trend and seasonality of the plot." 
         }
