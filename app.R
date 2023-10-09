@@ -216,7 +216,7 @@ ui <- list(
                 sliderInput(
                   inputId = "random", 
                   label = "random error (s.d. of the error)", 
-                  min = 0, max = 200, value = 0
+                  min = 0, max = 100, value = 0
                 ),
                 selectInput(
                   "simulation",
@@ -886,31 +886,24 @@ server <- function(input, output, session) {
             input$season}, {
               x <- input$random
               t = c(1:50)
-              
               f <- input$season
               temp = 45
-              
               error.model = function(x){rnorm(n = 50, sd = x, mean = 0)}
-              
               set.seed(temp)
-              
               y.sim = arima.sim(n = 50, list(ar = c(0.5), 
                                              ma = c(0.5)), 
                                 rand.gen = error.model)
               if (input$season == 0 & input$random == 0) {
                 y.sim2 = input$trend * t}
               else{
-                y.sim2 = input$trend * t + y.sim + 
+                y.sim2 = input$trend * t + 
                   rnorm(n = 50, sd = x, mean = 0) + 
                   f*cos(12*t)}
-              
-              
-              
             }
         )
-        output$simplot <- renderPlot(plot.ts(y.sim2(), 
-                                             ylab = "value", 
-                                             col = rgb(191, 116, 224, maxColorValue = 255), 
+        output$simplot <- renderPlot(plot.ts(y.sim2(),
+                                             ylab = "value",
+                                             col = rgb(191, 116, 224, maxColorValue = 255),
                                              lwd = 2))
         
         observeEvent(input$newpro, {
@@ -936,7 +929,7 @@ server <- function(input, output, session) {
                 if (input$season == 0 & input$random == 0) {
                   y.sim2 = input$trend * t}
                 else{
-                  y.sim2 = input$trend * t + y.sim + 
+                  y.sim2 = input$trend * t + 
                     rnorm(n = 50, sd = x, mean = 0) + 
                     f*cos(12*t)}
                 
@@ -968,7 +961,7 @@ server <- function(input, output, session) {
             if (input$season == 0 & input$random == 0) {
               a1 = input$trend * t}
             else{
-              a1 = input$trend * t + a + rnorm(n = 50, sd = x, mean = 0) + f*cos(12*t)}
+              a1 = input$trend * t + rnorm(n = 50, sd = x, mean = 0) + f*cos(12*t)}
           })
         b1 <- eventReactive({
           input$random
@@ -976,7 +969,7 @@ server <- function(input, output, session) {
           input$season},{
             x <- input$random
             t = c(1:50)
-            f <- input$season
+            f <- input$season 
             error.model = function(x){rnorm(n = 50, sd = x, mean = 0)}
             b = arima.sim(n = 50, list(ar = c(0.5), 
                                        ma = c(0.5)), 
@@ -984,7 +977,7 @@ server <- function(input, output, session) {
             if (input$season == 0 & input$random == 0) {
               b1 = input$trend * t}
             else{
-              b1 = input$trend * t + b + rnorm(n = 50, sd = x, mean = 0) + f*cos(12*t)}
+              b1 = input$trend * t  + rnorm(n = 50, sd = x, mean = 0) + f*cos(12*t)}
           })
         c1 <- eventReactive({
           input$random
@@ -1000,7 +993,7 @@ server <- function(input, output, session) {
             if (input$season == 0 & input$random == 0) {
               c1 = input$trend * t}
             else{
-              c1 = input$trend * t + c + rnorm(n = 50, sd = x, mean = 0) + f*cos(12*t)}
+              c1 = input$trend * t +c + rnorm(n = 50, sd = x, mean = 0) + f*cos(12*t)}
             
           })
         
@@ -1255,3 +1248,4 @@ server <- function(input, output, session) {
 
 # Boast App Call ----
 boastUtils::boastApp(ui = ui, server = server)
+## use ggplot to generate the simulation plots. 
