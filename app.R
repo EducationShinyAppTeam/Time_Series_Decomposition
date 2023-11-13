@@ -956,12 +956,11 @@ server <- function(input, output, session) {
             f <- input$season
             error.model = function(x){rnorm(n = 50, sd = x, mean = 0)}
             a = arima.sim(n = 50, list(ar = c(0.5), 
-                                       ma = c(0.5)), 
-                          rand.gen = error.model)
+                                       ma = c(0.5)))
             if (input$season == 0 & input$random == 0) {
               a1 = input$trend * t}
             else{
-              a1 = input$trend * t + rnorm(n = 50, sd = x, mean = 0) + f*cos(12*t)}
+              a1 = input$trend * t + a + rnorm(n = 50, sd = x, mean = 0) + f*cos(12*t)}
           })
         b1 <- eventReactive({
           input$random
@@ -969,15 +968,14 @@ server <- function(input, output, session) {
           input$season},{
             x <- input$random
             t = c(1:50)
-            f <- input$season 
+            f <- input$season
             error.model = function(x){rnorm(n = 50, sd = x, mean = 0)}
             b = arima.sim(n = 50, list(ar = c(0.5), 
-                                       ma = c(0.5)), 
-                          rand.gen = error.model)
+                                       ma = c(0.5)))
             if (input$season == 0 & input$random == 0) {
               b1 = input$trend * t}
             else{
-              b1 = input$trend * t  + rnorm(n = 50, sd = x, mean = 0) + f*cos(12*t)}
+              b1 = input$trend * t + b + rnorm(n = 50, sd = x, mean = 0) + f*cos(12*t)}
           })
         c1 <- eventReactive({
           input$random
@@ -988,12 +986,11 @@ server <- function(input, output, session) {
             f <- input$season
             error.model = function(x){rnorm(n = 50, sd = x, mean = 0)}
             c = arima.sim(n = 50, list(ar = c(0.5), 
-                                       ma = c(0.5)), 
-                          rand.gen = error.model)
+                                       ma = c(0.5)))
             if (input$season == 0 & input$random == 0) {
               c1 = input$trend * t}
             else{
-              c1 = input$trend * t +c + rnorm(n = 50, sd = x, mean = 0) + f*cos(12*t)}
+              c1 = input$trend * t + c + rnorm(n = 50, sd = x, mean = 0) + f*cos(12*t)}
             
           })
         
@@ -1011,7 +1008,7 @@ server <- function(input, output, session) {
               }
               else if (input$path == 2) {
                 if (input$season == 0 & input$random == 0) {
-                  output$simplot <- renderPlot(ts.plot(b1(), 
+                  output$simplot <- renderPlot(ts.plot(a1(), 
                                                        ylab = "value", 
                                                        lwd = 2, 
                                                        col = rgb(99, 235, 235, 
@@ -1026,11 +1023,12 @@ server <- function(input, output, session) {
                                                                                 maxColorValue = 255), 
                                                                             rgb(99, 235, 235,
                                                                           maxColorValue = 255)))))
+                  
                 }
               }
               else if (input$path == 3) {
                 if (input$season == 0 & input$random == 0) {
-                  output$simplot <- renderPlot(ts.plot(c1(), 
+                  output$simplot <- renderPlot(ts.plot(a1(), 
                                                        ylab = "value", 
                                                        lwd = 2, 
                                                        col = rgb(255, 105, 180, 
