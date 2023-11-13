@@ -903,8 +903,8 @@ server <- function(input, output, session) {
         )
         output$simplot <- renderPlot(plot.ts(y.sim2(),
                                              ylab = "value",
-                                             col = rgb(191, 116, 224, maxColorValue = 255),
-                                             lwd = 2))
+                                             col = c("#ce77a8", "#0072B2", "#E69F00"),
+                                             lwd = 2.5))
         
         observeEvent(input$newpro, {
           test <- sample(1:40, 1)
@@ -937,9 +937,8 @@ server <- function(input, output, session) {
           )
           output$simplot <- renderPlot(plot.ts(y.sim2(), 
                                                ylab = "value", 
-                                               col = rgb(191, 116, 224, 
-                                                         maxColorValue = 255), 
-                                               lwd = 2))
+                                               col = c("#ce77a8", "#0072B2", "#E69F00"), 
+                                               lwd = 2.5))
         })
       }
       else if (input$simulation == "multiple processes") {
@@ -1002,27 +1001,22 @@ server <- function(input, output, session) {
               if (input$path == 1) {
                 output$simplot <- renderPlot(ts.plot(a1(), 
                                                      ylab = "value", 
-                                                     lwd = 2, 
-                                                     col = rgb(191, 116, 224, 
-                                                               maxColorValue = 255)))
+                                                     lwd = 2.5, 
+                                                     col = c("#ce77a8", "#0072B2", "#E69F00")))
               }
               else if (input$path == 2) {
                 if (input$season == 0 & input$random == 0) {
                   output$simplot <- renderPlot(ts.plot(a1(), 
                                                        ylab = "value", 
-                                                       lwd = 2, 
-                                                       col = rgb(99, 235, 235, 
-                                                                 maxColorValue = 255)))
+                                                       lwd = 2.5, 
+                                                       col = c("#ce77a8", "#0072B2", "#E69F00")))
                 }
                 else{
                   output$simplot <- renderPlot(ts.plot(a1(), 
                                                        b1(), 
                                                        ylab = "value", 
-                                                       lwd = 2, 
-                                                       gpars = list(col = c(rgb(191, 116, 224,
-                                                                                maxColorValue = 255), 
-                                                                            rgb(99, 235, 235,
-                                                                          maxColorValue = 255)))))
+                                                       lwd = 2.5, 
+                                                       gpars = list(col = c("#ce77a8", "#0072B2", "#E69F00"))))
                   
                 }
               }
@@ -1030,26 +1024,19 @@ server <- function(input, output, session) {
                 if (input$season == 0 & input$random == 0) {
                   output$simplot <- renderPlot(ts.plot(a1(), 
                                                        ylab = "value", 
-                                                       lwd = 2, 
-                                                       col = rgb(255, 105, 180, 
-                                                                 maxColorValue = 255)))
+                                                       lwd = 2.5, 
+                                                       col = c("#ce77a8", "#0072B2", "#E69F00")))
                 }
                 else{
                   output$simplot <- renderPlot(ts.plot(a1(),
                                                        b1(),
                                                        c1(), 
                                                        ylab = "value", 
-                                                       lwd = 2, 
-                                                       gpars = list(col = c(rgb(191, 116, 224, 
-                                                                                maxColorValue = 255), 
-                                                                            rgb(99, 235, 235, 
-                                                                                maxColorValue = 255), 
-                                                                            rgb(255, 105, 180, 
-                                                                                maxColorValue = 255)))))
+                                                       lwd = 2.5, 
+                                                       gpars = list(col = c("#ce77a8", "#0072B2", "#E69F00"))))
                 }
               }
             })
-        
       }
     })
   
