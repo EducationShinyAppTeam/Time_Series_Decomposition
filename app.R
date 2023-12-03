@@ -63,7 +63,6 @@ ui <- list(
           tabName = "intro",
           withMathJax(),
           h1("Time Series Decomposition"),
-          br(),
           p("This application is to help you better understand long term trend, 
             seasonality,  and random components of time series plots."),
           h2("Instructions"),
@@ -89,23 +88,23 @@ ui <- list(
               style = "default"
             )
           ),
-          br(),br(),
+          br(),
           h2("Acknowledgements"),
           p("This app was developed and coded by Jiajun Gao in 2018. Stuart Vas 
-            started updates in 2022 which Luqi Jiao Emanuele completed in 2023.",
+            started updates in 2022 and Luqi Jiao Emanuele updates in 2023.",
             br(),br(),
             "Cite this app as:",
             br(),
             boastUtils::citeApp(),
             br(),
             br(),
-            div(class = "updated",  "Last Update: 07/20/2023 by LJE.")
+            div(class = "updated",  "Last Update: 11/20/2023 by LJE.")
           )
         ),
         ### Set up the Prerequisites Page ----
         tabItem(
           tabName = "prerequisites",
-          h2("Time Series"),
+          h2("Prerequisites"),
           p("A time series refers to a sequence of data points or observations 
             collected and recorded over time, typically at regular intervals. It 
             is a fundamental concept in data analysis, where the focus is on studying 
@@ -130,13 +129,11 @@ ui <- list(
                     in the time series that cannot be attributed to the trend, 
                     seasonality, or other explanatory trends.")
           )
-          
         ),
         ### Set up an Explore Page  ----
         tabItem(
           tabName = "plots",
           h2("Explore"),
-          br(),
           p("There are five different datasets for you to explore the trend and 
             seasonality."),
           br(),
@@ -163,12 +160,6 @@ ui <- list(
                   label = "Seasonal",
                   value = FALSE
                 )
-              ),
-              bsButton(
-                "nextpart", 
-                "NEXT", 
-                size = "large",
-                center = TRUE
               )
             ),
             fluidRow(
@@ -195,9 +186,9 @@ ui <- list(
         tabItem(
           tabName = "modify",
           h2("Simulate Time Series Decomposition"),
-          br(),
-          h6("Use the toggle inputs to simulate time series plots with different
-            inputs"),
+          p("Use the toggle inputs to simulate time series plots with different
+            inputs."),
+          p("Note: When the random error is zero, the time series are the same."),
           br(),
           fluidRow(
             column(
@@ -205,47 +196,39 @@ ui <- list(
               wellPanel(
                 sliderInput(
                   inputId = "trend", 
-                  label = "slope of long term trend", 
+                  label = "Slope of long term trend", 
                   min = -15, max = 15, value = 0
                 ),
                 sliderInput(
                   inputId = "season", 
-                  label = "seasonality (amplitude)", 
+                  label = "Seasonality (amplitude)", 
                   min = 0, max = 200, value = 0
                 ),
                 sliderInput(
                   inputId = "random", 
-                  label = "random error (s.d. of the error)", 
+                  label = "Random error (S.D. of the error)", 
                   min = 0, max = 100, value = 0
                 ),
-                selectInput(
-                  "simulation",
-                  label = "Simulation",
-                  choices = c("single process", "multiple processes"),
-                  selected = "single process"
+                
+                sliderInput(
+                  inputId = "path", 
+                  label = "Number of series simulated", 
+                  min = 1, max = 3, value = 1
                 ),
-                ####add a conditonal slide
-                conditionalPanel(
-                  condition = "input.simulation == 'multiple processes'",
-                  sliderInput("path", "# of paths", min = 1, max = 3, value = 1)
-                ),
-                conditionalPanel(
-                  condition = "input.simulation",
+                div(
                   style = "text-align: center" , 
                   bsButton(
-                    "newpro", 
-                    "New Process", 
+                    inputId = "newpro", 
+                    label = "New Process", 
                     size = "middle"
                   )
                 )
               )
             ),
+            
             column(
               width = 8,
-              wellPanel(
-                style = "background-color: #EAF2F8",
-                plotOutput("simplot", height = 500)
-              )
+              plotOutput("simplot", height = 500)
             )
           ),
           br(),
@@ -321,7 +304,6 @@ ui <- list(
               width = 4,
               h4("option C"),
               uiOutput("choiceC")
-              # imageOutput("choice3", height = 250))
             )
           )
         ),
@@ -330,6 +312,11 @@ ui <- list(
           tabName = "references",
           withMathJax(),
           h2("References"),
+          p(class = "hangingindent",
+            "Attali , D. (2021). shinyjs: Easily Improve the User Experience of Your Shiny Apps in Seconds.
+            (v 0.2.1). [R package]. Available from 
+            https://cran.r-project.org/web/packages/shinyjs/index.html"
+          ),
           p(class = "hangingindent",
             "Bailey, E. (2022). shinyBS: Twitter bootstrap components for shiny.
             (v 0.61.1). [R package]. Available from 
@@ -362,9 +349,20 @@ ui <- list(
             https://CRAN.R-project.org/package=shinyWidgets"
           ),
           p(class = "hangingindent",
+            "Stoffer, S. and Poison, N. (2023). astsa: Applied Statistical Time Series Analysis.
+            (v 0.2.0). [R package]. Available from 
+            https://cran.r-project.org/web/packages/astsa/index.html"
+          ),
+          p(class = "hangingindent",
             "Wickham, W. (2016), ggplot2: Elegant graphics for data analysis,
             R Package. Springer-Verlag New York. (v 3.3.6). [R package].
             Available from https://ggplot2.tidyverse.org"
+          ),
+          p(class = "hangingindent",
+            "Zeileis. A, Grothendieck, G., Allaire, J., Ryan, J. A., Ulrich, J. M., 
+            Andrews, F., (2021). zoo: S3 Infrastructure for Regular and Irregular Time Series 
+            (Z's Ordered Observations). (v 1.8.0). [R package]. 
+            Available from https://cran.r-project.org/web/packages/zoo/index.html"
           ),
           br(),
           br(),
@@ -873,131 +871,57 @@ server <- function(input, output, session) {
   })
   
   observeEvent(
-    input$simulation,{
-      
-      if (input$simulation == "single process") {
-        updateSliderInput(session, "random", value = 0)
-        updateSliderInput(session, "trend", value = 0)
-        updateSliderInput(session, "season", value = 0)
-        
-        y.sim2 <- eventReactive(
-          {input$random
-            input$trend
-            input$season}, {
-              x <- input$random
-              t = c(1:50)
-              f <- input$season
-              temp = 45
-              error.model = function(x){rnorm(n = 50, sd = x, mean = 0)}
-              set.seed(temp)
-              y.sim = arima.sim(n = 50, list(ar = c(0.5), 
-                                             ma = c(0.5)), 
-                                rand.gen = error.model)
-              if (input$season == 0 & input$random == 0) {
-                y.sim2 = input$trend * t}
-              else{
-                y.sim2 = input$trend * t + 
-                  rnorm(n = 50, sd = x, mean = 0) + 
-                  f*cos(12*t)}
-            }
-        )
-        output$simplot <- renderPlot(plot.ts(y.sim2(),
-                                             ylab = "value",
-                                             col = c("#ce77a8", "#0072B2", "#E69F00"),
-                                             lwd = 2.5))
-        
-        observeEvent(input$newpro, {
-          test <- sample(1:40, 1)
-          
-          updateSliderInput(session, "random", value = 0)
-          updateSliderInput(session, "trend", value = 0)
-          updateSliderInput(session, "season", value = 0)
-          
-          y.sim2 <- eventReactive(
-            {input$random
-              input$trend
-              input$season}, {
-                x <- input$random
-                t = c(1:50)
-                
-                f <- input$season
-                set.seed(test)
-                error.model = function(x){rnorm(n = 50, sd = x, mean = 0)}
-                y.sim = arima.sim(n = 50, list(ar = c(0.5),
-                                               ma = c(0.5)),
-                                  rand.gen = error.model)
-                if (input$season == 0 & input$random == 0) {
-                  y.sim2 = input$trend * t}
-                else{
-                  y.sim2 = input$trend * t + 
-                    rnorm(n = 50, sd = x, mean = 0) + 
-                    f*cos(12*t)}
-                
-              }
-          )
-          output$simplot <- renderPlot(plot.ts(y.sim2(), 
-                                               ylab = "value", 
-                                               col = c("#ce77a8", "#0072B2", "#E69F00"), 
-                                               lwd = 2.5))
-        })
-      }
-      else if (input$simulation == "multiple processes") {
-        updateSliderInput(session, "random", value = 0)
-        updateSliderInput(session, "trend", value = 0)
-        updateSliderInput(session, "season", value = 0)
-        
-        a1 <- eventReactive({
-          input$random
-          input$trend
-          input$season},{
-            x <- input$random
-            t = c(1:50)
-            f <- input$season
-            error.model = function(x){rnorm(n = 50, sd = x, mean = 0)}
-            a = arima.sim(n = 50, list(ar = c(0.5), 
-                                       ma = c(0.5)))
-            if (input$season == 0 & input$random == 0) {
-              a1 = input$trend * t}
-            else{
-              a1 = input$trend * t + a + rnorm(n = 50, sd = x, mean = 0) + f*cos(12*t)}
-          })
-        b1 <- eventReactive({
-          input$random
-          input$trend
-          input$season},{
-            x <- input$random
-            t = c(1:50)
-            f <- input$season
-            error.model = function(x){rnorm(n = 50, sd = x, mean = 0)}
-            b = arima.sim(n = 50, list(ar = c(0.5), 
-                                       ma = c(0.5)))
-            if (input$season == 0 & input$random == 0) {
-              b1 = input$trend * t}
-            else{
-              b1 = input$trend * t + b + rnorm(n = 50, sd = x, mean = 0) + f*cos(12*t)}
-          })
-        c1 <- eventReactive({
-          input$random
-          input$trend
-          input$season},{
-            x <- input$random
-            t = c(1:50)
-            f <- input$season
-            error.model = function(x){rnorm(n = 50, sd = x, mean = 0)}
-            c = arima.sim(n = 50, list(ar = c(0.5), 
-                                       ma = c(0.5)))
-            if (input$season == 0 & input$random == 0) {
-              c1 = input$trend * t}
-            else{
-              c1 = input$trend * t + c + rnorm(n = 50, sd = x, mean = 0) + f*cos(12*t)}
-            
-          })
-        
-        ###  Path of multiple processes ----
-        observeEvent(
           {input$path
             input$season
             input$random}, {
+              
+              a1 <- eventReactive({
+                input$random
+                input$trend
+                input$season},{
+                  x <- input$random
+                  t = c(1:50)
+                  f <- input$season
+                  error.model = function(x){rnorm(n = 50, sd = x, mean = 0)}
+                  a = arima.sim(n = 50, list(ar = c(0.5), 
+                                             ma = c(0.5)))
+                  if (input$season == 0 & input$random == 0) {
+                    a1 = input$trend * t}
+                  else{
+                    a1 = input$trend * t + a + rnorm(n = 50, sd = x, mean = 0) + f*cos(12*t)}
+                })
+              b1 <- eventReactive({
+                input$random
+                input$trend
+                input$season},{
+                  x <- input$random
+                  t = c(1:50)
+                  f <- input$season
+                  error.model = function(x){rnorm(n = 50, sd = x, mean = 0)}
+                  b = arima.sim(n = 50, list(ar = c(0.5), 
+                                             ma = c(0.5)))
+                  if (input$season == 0 & input$random == 0) {
+                    b1 = input$trend * t}
+                  else{
+                    b1 = input$trend * t + b + rnorm(n = 50, sd = x, mean = 0) + f*cos(12*t)}
+                })
+              c1 <- eventReactive({
+                input$random
+                input$trend
+                input$season},{
+                  x <- input$random
+                  t = c(1:50)
+                  f <- input$season
+                  error.model = function(x){rnorm(n = 50, sd = x, mean = 0)}
+                  c = arima.sim(n = 50, list(ar = c(0.5), 
+                                             ma = c(0.5)))
+                  if (input$season == 0 & input$random == 0) {
+                    c1 = input$trend * t}
+                  else{
+                    c1 = input$trend * t + c + rnorm(n = 50, sd = x, mean = 0) + f*cos(12*t)}
+                  
+                })
+              
               if (input$path == 1) {
                 output$simplot <- renderPlot(ts.plot(a1(), 
                                                      ylab = "value", 
@@ -1037,8 +961,100 @@ server <- function(input, output, session) {
                 }
               }
             })
+  
+  observeEvent(input$newpro, {
+    test <- sample(1:40, 1)
+    
+    updateSliderInput(session, "random", value = 0)
+    updateSliderInput(session, "trend", value = 0)
+    updateSliderInput(session, "season", value = 0)
+    
+    a1 <- eventReactive({
+      input$random
+      input$trend
+      input$season},{
+        x <- input$random
+        t = c(1:50)
+        f <- input$season
+        error.model = function(x){rnorm(n = 50, sd = x, mean = 0)}
+        a = arima.sim(n = 50, list(ar = c(0.5), 
+                                   ma = c(0.5)))
+        if (input$season == 0 & input$random == 0) {
+          a1 = input$trend * t}
+        else{
+          a1 = input$trend * t + a + rnorm(n = 50, sd = x, mean = 0) + f*cos(12*t)}
+      })
+    b1 <- eventReactive({
+      input$random
+      input$trend
+      input$season},{
+        x <- input$random
+        t = c(1:50)
+        f <- input$season
+        error.model = function(x){rnorm(n = 50, sd = x, mean = 0)}
+        b = arima.sim(n = 50, list(ar = c(0.5), 
+                                   ma = c(0.5)))
+        if (input$season == 0 & input$random == 0) {
+          b1 = input$trend * t}
+        else{
+          b1 = input$trend * t + b + rnorm(n = 50, sd = x, mean = 0) + f*cos(12*t)}
+      })
+    c1 <- eventReactive({
+      input$random
+      input$trend
+      input$season},{
+        x <- input$random
+        t = c(1:50)
+        f <- input$season
+        error.model = function(x){rnorm(n = 50, sd = x, mean = 0)}
+        c = arima.sim(n = 50, list(ar = c(0.5), 
+                                   ma = c(0.5)))
+        if (input$season == 0 & input$random == 0) {
+          c1 = input$trend * t}
+        else{
+          c1 = input$trend * t + c + rnorm(n = 50, sd = x, mean = 0) + f*cos(12*t)}
+        
+      })
+    
+    if (input$path == 1) {
+      output$simplot <- renderPlot(ts.plot(a1(), 
+                                           ylab = "value", 
+                                           lwd = 2.5, 
+                                           col = c("#ce77a8", "#0072B2", "#E69F00")))
+    }
+    else if (input$path == 2) {
+      if (input$season == 0 & input$random == 0) {
+        output$simplot <- renderPlot(ts.plot(a1(), 
+                                             ylab = "value", 
+                                             lwd = 2.5, 
+                                             col = c("#ce77a8", "#0072B2", "#E69F00")))
       }
-    })
+      else{
+        output$simplot <- renderPlot(ts.plot(a1(), 
+                                             b1(), 
+                                             ylab = "value", 
+                                             lwd = 2.5, 
+                                             gpars = list(col = c("#ce77a8", "#0072B2", "#E69F00"))))
+        
+      }
+    }
+    else if (input$path == 3) {
+      if (input$season == 0 & input$random == 0) {
+        output$simplot <- renderPlot(ts.plot(a1(), 
+                                             ylab = "value", 
+                                             lwd = 2.5, 
+                                             col = c("#ce77a8", "#0072B2", "#E69F00")))
+      }
+      else{
+        output$simplot <- renderPlot(ts.plot(a1(),
+                                             b1(),
+                                             c1(), 
+                                             ylab = "value", 
+                                             lwd = 2.5, 
+                                             gpars = list(col = c("#ce77a8", "#0072B2", "#E69F00"))))
+      }
+    }
+  })
   
   ## Challenge Page ----
   
